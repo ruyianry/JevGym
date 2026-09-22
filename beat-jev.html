@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Can you beat Jev? — JevGym</title>
+<meta name="description" content="Set your probability with a slider on real resolved questions from six categories, then see whether you — or Jev, or the market — was closest to the truth. JevGym in miniature." />
+<style>
+  :root{
+    --ink:#0d1017; --body:#232a36; --muted:#667085; --line:#e8eaf0; --bg:#fff; --bg-soft:#f7f8fc;
+    --accent:#4f46e5; --accent-2:#06b6d4; --accent-soft:#eef0ff;
+    --ok:#0a8f57; --ok-soft:#e7f7ef; --warn:#b4590a; --warn-soft:#fbf1e6; --bad:#c0392b; --bad-soft:#fdece9;
+    --radius:14px; --maxw:840px; --shadow:0 1px 2px rgba(16,19,23,.04),0 12px 32px rgba(16,19,23,.06);
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+  body{margin:0;color:var(--body);background:var(--bg);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji",sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px;}
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.05;letter-spacing:-.03em;margin:0 0 14px;color:#fff;font-weight:850;}
+  h1 .grad{background:linear-gradient(92deg,#a9b4ff,#7ee7ff 60%,#b9f5e6);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#cdd5ff;background:rgba(255,255,255,.10);padding:5px 11px;border-radius:999px;margin-bottom:14px;}
+
+  nav.top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line);}
+  nav.top .wrap{display:flex;align-items:center;gap:16px;height:58px;}
+  .brand{font-weight:800;letter-spacing:-.02em;color:var(--ink);font-size:18px;}
+  .brand .dot{color:var(--accent);}
+  nav.top .links{margin-left:auto;display:flex;gap:20px;align-items:center;}
+  nav.top .links a{color:var(--body);font-size:14.5px;font-weight:600;}
+
+  header.hero{position:relative;overflow:hidden;color:#eef1ff;background:radial-gradient(900px 360px at 80% -10%,rgba(6,182,212,.28),transparent 60%),radial-gradient(1000px 440px at 10% 0,rgba(99,102,241,.42),transparent 62%),linear-gradient(160deg,#0b1020,#0d1330 55%,#0a0f22);}
+  .hero-inner{position:relative;padding:60px 0 54px;}
+  .hero p.lede{font-size:clamp(16px,2vw,20px);color:#c7cef0;margin:0 0 6px;max-width:640px;}
+
+  /* sticky scoreboard */
+  .score{position:sticky;top:58px;z-index:40;background:#0d1220;color:#fff;border-bottom:1px solid #1b2340;}
+  .score .wrap{display:flex;align-items:center;gap:18px;height:56px;flex-wrap:wrap;}
+  .score b{font-size:20px;letter-spacing:-.01em;}
+  .score .vs{color:#8b95bd;font-weight:700;}
+  .score .tag{font-size:12.5px;color:#aeb7dd;}
+  .score .ret{margin-left:auto;font-size:14px;color:#c7cef0;}
+  .score .ret .up{color:#5ff0b0;font-weight:700;} .score .ret .down{color:#ff8b7a;font-weight:700;}
+
+  main{padding:34px 0 10px;}
+  .intro{background:var(--accent-soft);border:1px solid #d9ddff;border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;}
+  .card{border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin:16px 0;box-shadow:var(--shadow);background:#fff;}
+  .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);}
+  .pill.real{background:var(--ok-soft);color:var(--ok);} .pill.illus{background:var(--warn-soft);color:var(--warn);}
+  .qtext{font-size:19px;font-weight:650;color:var(--ink);margin:10px 0 4px;letter-spacing:-.01em;}
+  .state{color:var(--muted);font-size:14px;margin-bottom:14px;}
+
+  .sliderrow{display:flex;align-items:center;gap:14px;margin:8px 0 4px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:8px;border-radius:999px;flex:1;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 8px rgba(79,70,229,.4);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--accent);cursor:pointer;}
+  input[type=range]:disabled{opacity:.55;}
+  .yourval{min-width:132px;text-align:right;font-weight:800;font-size:20px;color:var(--ink);letter-spacing:-.02em;}
+  .yourval small{display:block;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.02em;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:11px;font-weight:700;font-size:15px;border:1px solid transparent;background:linear-gradient(180deg,#6d67ff,#4f46e5);color:#fff;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;margin-top:12px;}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(79,70,229,.4);}
+  .btn[disabled]{opacity:.5;cursor:default;transform:none;box-shadow:none;}
+
+  .reveal{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px;display:none;}
+  .reveal.show{display:block;}
+  .bars{display:grid;grid-template-columns:90px 1fr 96px;gap:8px 12px;align-items:center;font-size:14px;}
+  .bars .lab{font-weight:700;color:var(--ink);} .bars .lab small{font-weight:600;color:var(--muted);}
+  .track{height:12px;border-radius:999px;background:#eef0f6;position:relative;overflow:hidden;}
+  .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;}
+  .fill.you{background:linear-gradient(90deg,#4f46e5,#06b6d4);}
+  .fill.jev{background:#0d1220;} .fill.mkt{background:#94a0c0;}
+  .num{text-align:right;font-variant-numeric:tabular-nums;color:var(--body);}
+  .verdict{margin-top:14px;padding:12px 14px;border-radius:11px;font-weight:600;}
+  .verdict.win{background:var(--ok-soft);color:var(--ok);} .verdict.lose{background:var(--bad-soft);color:var(--bad);} .verdict.tie{background:var(--bg-soft);color:var(--muted);}
+  .outcome{font-weight:800;} .outcome.y{color:var(--ok);} .outcome.n{color:var(--bad);}
+
+  .final{display:none;text-align:center;padding:26px;margin:22px 0;border-radius:16px;background:linear-gradient(160deg,#0b1020,#141b3a);color:#fff;box-shadow:var(--shadow);}
+  .final.show{display:block;} .final h2{font-size:30px;margin:0 0 6px;color:#fff;letter-spacing:-.02em;} .final p{color:#c7cef0;margin:6px 0;}
+
+  section.note{background:var(--bg-soft);border-top:1px solid var(--line);margin-top:30px;padding:36px 0;}
+  section.note h2{font-size:22px;color:var(--ink);margin:0 0 10px;}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:#eef0f6;padding:2px 6px;border-radius:5px;}
+  pre{background:#0d1220;color:#e7ecff;border-radius:11px;padding:14px 16px;overflow-x:auto;font:13.5px/1.55 ui-monospace,Menlo,Consolas,monospace;}
+  footer{padding:34px 0 60px;background:#0d1220;color:#98a2c4;font-size:14px;} footer a{color:#c3caea;text-decoration:underline;}
+  @media(max-width:560px){ .bars{grid-template-columns:70px 1fr 78px;} .yourval{min-width:104px;font-size:17px;} }
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="wrap">
+  <a class="brand" href="index.html">Jev<span class="dot">Gym</span></a>
+  <span class="links"><a href="kalshi.html#results">Kalshi results</a><a href="evaluate.html">Evaluate Jev</a><a href="index.html">← Home</a></span>
+</div></nav>
+
+<header class="hero"><div class="wrap"><div class="hero-inner">
+  <span class="eyebrow">Interactive</span>
+  <h1>Can you beat <span class="grad">Jev</span>?</h1>
+  <p class="lede">Six Kalshi questions in mixed order — <strong>storms, temperature, the Fed, crypto</strong> — all ones you <strong>can't just recall</strong> (or still unresolved). Set your probability with the slider, lock it in, and see who was closest: you, Jev, or the market. Changed your mind? Hit revert.</p>
+</div></div></header>
+
+<div class="score"><div class="wrap">
+  <span><b id="sYou">0</b> <span class="tag">you</span></span>
+  <span class="vs">vs</span>
+  <span><b id="sJev">0</b> <span class="tag">Jev</span></span>
+  <span class="tag" id="sProg">— 0 / 6 revealed · scoring the answerable</span>
+  <span class="ret">your return <span id="sRetYou" class="up">+0.0%</span> &nbsp;·&nbsp; Jev <span id="sRetJev" class="up">+0.0%</span></span>
+</div></div>
+
+<main><div class="wrap">
+  <div class="intro">
+    <strong>JevGym in miniature.</strong> A market price is just the crowd's probability. Whoever lands <em>closest to the truth</em> (lowest Brier score) is the one who could <em>readjust the market</em> toward reality — that's the point (not extracting arbitrage, but correcting the price). Move each slider to your <strong>P(YES)</strong>, lock it in, and we reveal Jev's real answer, the market price, and what actually happened. <strong>Some questions have no answer yet</strong> (pending or genuinely ambiguous) — those show where you and Jev stand but aren't scored, because forecasting means committing before you can look it up. Hit <strong>Try again</strong> to re-take any question. Return = P&amp;L as a % of the $1 contract if you'd bet your side at the market price.
+  </div>
+  <div id="cards"></div>
+
+  <div class="final" id="final">
+    <h2 id="finalTitle"></h2>
+    <p id="finalSub"></p>
+    <p id="finalRet"></p>
+  </div>
+</div></main>
+
+<section class="note"><div class="wrap">
+  <h2>Want to ask Jev your own questions <em>on Kalshi</em>?</h2>
+  <p>This page uses Jev's <strong>real, pre-computed</strong> answers — nothing leaves your browser and no API key is needed here. To run Jev live on questions <em>you</em> pick, use the open-source CLI locally and keep your key in a <code>.env</code> file — the safest place for it. Never paste an API key into a web page: it can't safely reach the paid API from a browser anyway (CORS), and a page should never see your secret.</p>
+  <pre>echo "TS_TOKEN=your-key" &gt;&gt; .env      # gitignored; stays on your machine
+jevgym eval --agents kalshi_market,jev --track both</pre>
+  <p class="tag" style="color:var(--muted)">Weather is a real leakage-safe JevGym result. The others use Jev's real live answers; where a past-event market price is shown it's an approximate crowd estimate from the time (illustrative). The no-answer questions are genuinely open or ambiguous.</p>
+</div></section>
+
+<footer><div class="wrap">
+  <p><a href="index.html">← Back to JevGym</a> · <a href="kalshi.html">Kalshi report</a> · We do not assume Jev wins.</p>
+  <p style="font-size:13px;color:#8b95bd">Independent research — not affiliated with Kalshi; trademarks belong to their owners. Data used under Kalshi's Terms; not financial advice. See the <a href="DISCLAIMER.md">disclaimer</a>.</p>
+</div></footer>
+
+<script>
+const Q = [
+  { cat:"Weather · Storms", date:"August 2026",
+    q:"Will there be more than 75 tornadoes in the U.S. in August 2026?",
+    state:"Kalshi KXTORNADO-26AUG — U.S. tornado count for the month.",
+    jev:0.45, market:0.995, y:1, lat:511 },
+  { cat:"Weather · Temp", date:"Sep 19, 2026",
+    q:"Will Miami's daily high on 2026-09-19 land in the 90–91°F (≈32–33°C) bucket?",
+    state:"Kalshi KXHIGHMIA-26SEP19-B90.5 — the high at Miami (KMIA), scored before the day.",
+    jev:0.03, market:0.185, y:1, lat:214 },
+  { cat:"Fed · FOMC", date:"Sep 2026 meeting",
+    q:"Will the Fed hike its target rate by more than 25 bps at the September 2026 FOMC?",
+    state:"Kalshi KXFEDDECISION-26SEP — the FOMC rate decision.",
+    jev:0.01, market:null, y:0, lat:290 },
+  { cat:"Crypto", date:"Sep 22, 2026",
+    q:"Will Bitcoin be above $92,800 on 2026-09-22?",
+    state:"Kalshi KXBTCD-26SEP22 — Bitcoin's daily level, scored before the day.",
+    jev:0.35, market:0.005, y:0, lat:311 },
+  { cat:"Fed · rate", date:"Sep 2026",
+    q:"Will the Fed target rate be above 5.25% after the September 2026 meeting?",
+    state:"Kalshi KXFED-26SEP — the Fed funds target rate.",
+    jev:0.12, market:null, y:0, lat:203 },
+  { cat:"Crypto", date:"as of 2026-09-22 · resolves 2026-12-31",
+    q:"Will Bitcoin close above $150,000 at any point before the end of 2026?",
+    state:"Kalshi BTC end-of-year market — still open, not resolved yet.",
+    jev:0.55, market:null, y:null, lat:642 },
+];
+
+let youWins=0, jevWins=0, revealed=0, retYou=0, retJev=0;
+const answerable = Q.filter(d=>d.y!==null).length;
+const S = Q.map(()=>({revealed:false, scored:false, myRet:0, jvRet:0, win:null}));
+const cards = document.getElementById('cards');
+const cardEls = [];
+
+function pct(x){ return (x*100).toFixed(0)+"%"; }
+function betReturn(p, market, y){ // side by p>=.5; return as % of the $1 contract
+  const side = p>=0.5 ? "YES":"NO";
+  const r = side==="YES" ? (y - market) : (market - y);
+  return { side, pct:r*100 };
+}
+function fmtRet(v){ const s=(v>=0?"+":"")+v.toFixed(1)+"%"; return `<span class="${v>=0?'up':'down'}">${s}</span>`; }
+function bar(lab,val,extra){ const cls = lab==='You'?'you':(lab==='Jev'?'jev':'mkt');
+  return `<div class="lab">${lab}</div><div class="track"><div class="fill ${cls}" style="width:${val*100}%"></div></div><div class="num">${pct(val)}${extra||''}</div>`; }
+function tryAgainBtn(i){ return `<button class="btn" style="background:#e9ecf5;color:#1c2333;box-shadow:none;margin-top:12px" id="ta${i}">↩ Revert</button>`; }
+
+Q.forEach((d,i)=>{
+  const el = document.createElement('div');
+  el.className='card';
+  const tag = d.y===null ? ' <span class="pill illus">🔮 no answer — can’t look it up</span>' : '';
+  el.innerHTML = `
+    <span class="pill">${d.cat}</span>${tag} <span class="pill" style="background:#eef0f6;color:#667085">📅 ${d.date}</span>
+    <div class="qtext">${d.q}</div>
+    <div class="state">${d.state}</div>
+    <div class="sliderrow">
+      <input type="range" min="1" max="99" value="50" id="r${i}">
+      <div class="yourval"><span id="v${i}">50%</span><small>your P(YES)</small></div>
+    </div>
+    <button class="btn" id="b${i}">Lock in &amp; reveal →</button>
+    <div class="reveal" id="rev${i}"></div>`;
+  cards.appendChild(el); cardEls[i]=el;
+  const r=document.getElementById('r'+i), v=document.getElementById('v'+i), b=document.getElementById('b'+i);
+  r.addEventListener('input', ()=> v.textContent = r.value+"%");
+  b.addEventListener('click', ()=> doReveal(i));
+});
+
+function doReveal(i){
+  const d=Q[i], r=document.getElementById('r'+i), b=document.getElementById('b'+i);
+  const you = (+r.value)/100;
+  r.disabled=true; b.disabled=true; b.textContent="Locked in ✓";
+  const rev=document.getElementById('rev'+i); rev.className='reveal show';
+
+  if(d.y===null){ // no ground truth — show standings, don't score
+    let bars = bar('You',you) + bar('Jev',d.jev) + (d.market!==null ? bar('Market',d.market) : '');
+    rev.innerHTML = `<div class="bars">${bars}</div>
+      <p style="margin:8px 0 2px;font-size:13px;color:var(--muted)">🤖 Jev metadata — model <strong>jev-1.13.0</strong> · confidence ${pct(Math.max(d.jev,1-d.jev))} · latency ${d.lat} ms</p>
+      <div class="verdict tie">🔮 No ground truth (yet). This one you — and everyone — can't look up; even in hindsight it may stay ambiguous. See where you and Jev stand — that's the real test of a forecaster.</div>
+      ${tryAgainBtn(i)}`;
+    document.getElementById('ta'+i).addEventListener('click',()=>resetCard(i));
+    S[i]={revealed:true, scored:false, myRet:0, jvRet:0, win:null};
+    revealed++; updateScore(); return;
+  }
+
+  const hasMkt = d.market!==null;
+  const bYou=(you-d.y)**2, bJev=(d.jev-d.y)**2;
+  const win = bYou < bJev ? 'you' : (bJev < bYou ? 'jev' : 'tie');
+  if(win==='you') youWins++; else if(win==='jev') jevWins++;
+  let myRet=0, jvRet=0, betLine='';
+  if(hasMkt){
+    const myBet=betReturn(you,d.market,d.y), jvBet=betReturn(d.jev,d.market,d.y);
+    myRet=myBet.pct; jvRet=jvBet.pct; retYou+=myRet; retJev+=jvRet;
+    betLine = `<p style="margin:2px 0">Your bet: <strong>${myBet.side}</strong> → return ${fmtRet(myBet.pct)} &nbsp;·&nbsp; Jev's bet: <strong>${jvBet.side}</strong> → return ${fmtRet(jvBet.pct)}</p>`;
+  }
+  S[i]={revealed:true, scored:true, myRet, jvRet, win};
+  const rank=[['you',bYou],['Jev',bJev]]; if(hasMkt) rank.push(['market',(d.market-d.y)**2]);
+  const closest = rank.sort((a,b)=>a[1]-b[1])[0][0];
+  rev.innerHTML = `
+    <div class="bars">
+      ${bar('You',you,' · Brier '+bYou.toFixed(3))}
+      ${bar('Jev',d.jev,' · Brier '+bJev.toFixed(3))}
+      ${hasMkt ? bar('Market',d.market,' · Brier '+((d.market-d.y)**2).toFixed(3)) : ''}
+    </div>
+    <p style="margin:8px 0 2px;font-size:13px;color:var(--muted)">🤖 Jev metadata — model <strong>jev-1.13.0</strong> · confidence ${pct(Math.max(d.jev,1-d.jev))} · latency ${d.lat} ms</p>
+    <p style="margin:12px 0 4px">Outcome: <span class="outcome ${d.y?'y':'n'}">${d.y?'YES':'NO'}</span> · closest to the truth: <strong>${closest}</strong>${hasMkt?'':' <span style="color:var(--muted)">(no market quote)</span>'}</p>
+    ${betLine}
+    <div class="verdict ${win==='you'?'win':(win==='jev'?'lose':'tie')}">${
+      win==='you' ? '🎉 You beat Jev on this one — closer to the truth.' :
+      win==='jev' ? '🤖 Jev was closer this round.' : '🤝 Dead tie with Jev.'}</div>
+    ${tryAgainBtn(i)}`;
+  document.getElementById('ta'+i).addEventListener('click',()=>resetCard(i));
+  revealed++; updateScore();
+}
+
+function resetCard(i){
+  const st=S[i]; if(!st.revealed) return;
+  if(st.scored){ if(st.win==='you') youWins--; else if(st.win==='jev') jevWins--; retYou-=st.myRet; retJev-=st.jvRet; }
+  S[i]={revealed:false, scored:false, myRet:0, jvRet:0, win:null};
+  revealed--;
+  const r=document.getElementById('r'+i), b=document.getElementById('b'+i), rev=document.getElementById('rev'+i);
+  r.disabled=false; b.disabled=false; b.textContent="Lock in & reveal →"; rev.className='reveal'; rev.innerHTML='';
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('sYou').textContent=youWins;
+  document.getElementById('sJev').textContent=jevWins;
+  document.getElementById('sProg').textContent = `— ${revealed} / ${Q.length} revealed · scoring the ${answerable} answerable`;
+  const ry=document.getElementById('sRetYou'); if(ry){ ry.textContent=(retYou>=0?'+':'')+retYou.toFixed(1)+'%'; ry.className=retYou>=0?'up':'down'; }
+  const rj=document.getElementById('sRetJev'); if(rj){ rj.textContent=(retJev>=0?'+':'')+retJev.toFixed(1)+'%'; rj.className=retJev>=0?'up':'down'; }
+  if(revealed===Q.length) showFinal(); else document.getElementById('final').className='final';
+}
+
+function showFinal(){
+  const f=document.getElementById('final'); f.className='final show';
+  const t=document.getElementById('finalTitle'), s=document.getElementById('finalSub'), rr=document.getElementById('finalRet');
+  if(youWins>jevWins){ t.textContent=`🏆 You beat Jev, ${youWins}–${jevWins}!`; s.textContent="Closer to the truth more often on the answerable ones. The no-answer questions? Nobody can look those up — that's forecasting."; }
+  else if(jevWins>youWins){ t.textContent=`🤖 Jev held the line, ${jevWins}–${youWins}.`; s.textContent="Hard to beat a calibrated model — notice where it was overconfident. That's where the edge lives."; }
+  else { t.textContent=`🤝 You tied Jev, ${youWins}–${jevWins}.`; s.textContent="Neck and neck on the answerable ones."; }
+  rr.innerHTML = `Total return — you ${fmtRet(retYou)} &nbsp;·&nbsp; Jev ${fmtRet(retJev)} <span style="color:#8b95bd">(P&amp;L as % of a $1 contract, over the ${answerable} answerable questions)</span>`;
+  f.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+</script>
+
+</body>
+</html>

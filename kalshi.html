@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JevGym — measuring the Jev-series models' capacity</title>
+<meta name="description" content="JevGym is a timestamped Kalshi benchmark and trading arena that measures the capacity of the Jev-series decision models. Every prediction uses only information available at the time and is scored against what actually happened." />
+<style>
+  :root {
+    --ink: #0d1017; --body: #232a36; --muted: #667085; --line: #e8eaf0; --bg: #ffffff; --bg-soft: #f7f8fc;
+    --accent: #4f46e5; --accent-2: #06b6d4; --accent-soft: #eef0ff;
+    --ok: #0a8f57; --ok-soft: #e7f7ef; --warn: #b4590a; --warn-soft: #fbf1e6;
+    --code-bg: #f4f5f9; --radius: 14px; --maxw: 900px;
+    --shadow: 0 1px 2px rgba(16,19,23,.04), 0 12px 32px rgba(16,19,23,.06);
+    --shadow-lg: 0 2px 6px rgba(16,19,23,.06), 0 24px 60px rgba(16,19,23,.10);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--body); background: var(--bg);
+    font: 17px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
+  h2 { font-size: clamp(24px, 3.2vw, 32px); line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 14px; }
+  h3 { font-size: 18px; letter-spacing: -0.01em; color: var(--ink); margin: 28px 0 8px; }
+  p, li { color: var(--body); }
+  .muted { color: var(--muted); }
+  .eyebrow { display:inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+             color: var(--accent); background: var(--accent-soft); padding: 5px 11px; border-radius: 999px; margin-bottom: 14px; }
+
+  /* nav */
+  nav.top { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.78); backdrop-filter: saturate(140%) blur(12px);
+            border-bottom: 1px solid var(--line); }
+  nav.top .wrap { display: flex; align-items: center; gap: 20px; height: 60px; }
+  .brand { font-weight: 800; letter-spacing: -.02em; color: var(--ink); font-size: 18px; }
+  .brand .dot { color: var(--accent); }
+  nav.top .links { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+  nav.top .links a { color: var(--body); font-size: 14.5px; font-weight: 600; }
+  nav.top .links a:hover { color: var(--accent); text-decoration: none; }
+  .nav-cta { background: var(--ink); color: #fff !important; padding: 8px 14px; border-radius: 9px; }
+  @media (max-width: 640px){ nav.top .links a:not(.nav-cta){ display:none; } }
+
+  /* hero */
+  header.hero { position: relative; overflow: hidden; color: #eef1ff;
+    background:
+      radial-gradient(900px 380px at 78% -8%, rgba(6,182,212,.28), transparent 60%),
+      radial-gradient(1000px 460px at 12% 4%, rgba(99,102,241,.42), transparent 62%),
+      linear-gradient(160deg, #0b1020 0%, #0d1330 55%, #0a0f22 100%);
+  }
+  header.hero::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background-image: radial-gradient(rgba(255,255,255,.09) 1px, transparent 1.4px);
+    background-size: 26px 26px; -webkit-mask-image: linear-gradient(180deg,#000,transparent 78%); mask-image: linear-gradient(180deg,#000,transparent 78%); }
+  .hero-inner { position: relative; padding: 76px 0 66px; }
+  .hero .eyebrow { color:#cdd5ff; background: rgba(255,255,255,.10); }
+  .hero h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.04; letter-spacing: -0.035em; margin: 0 0 18px; font-weight: 850; color:#fff; }
+  .hero h1 .grad { background: linear-gradient(92deg, #a9b4ff 0%, #7ee7ff 55%, #b9f5e6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p.lede { font-size: clamp(17px, 2.2vw, 21px); color: #c7cef0; margin: 0 0 26px; max-width: 660px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding: 12px 20px; border-radius: 11px; font-weight: 700; font-size: 15px; border: 1px solid transparent; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
+  .btn:hover { text-decoration: none; transform: translateY(-1px); }
+  .btn.primary { background: linear-gradient(180deg,#6d67ff,#4f46e5); color:#fff; box-shadow: 0 10px 26px rgba(79,70,229,.45); }
+  .btn.ghost { background: rgba(255,255,255,.08); color:#eef1ff; border-color: rgba(255,255,255,.20); }
+  .btn.ghost:hover { background: rgba(255,255,255,.15); }
+  .btn.play { background: linear-gradient(180deg,#ffd24d,#ff8a3d); color:#0b1020; box-shadow: 0 10px 26px rgba(255,138,61,.5); border:0; }
+  .btn.play:hover { filter: brightness(1.04); }
+
+  .stats { display:flex; flex-wrap:wrap; gap: 12px; margin-top: 34px; }
+  .stat { flex: 1 1 150px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.12); border-radius: 13px; padding: 14px 16px; }
+  .stat b { display:block; font-size: 24px; letter-spacing: -.02em; color:#fff; font-weight: 800; }
+  .stat span { font-size: 12.5px; color:#aeb7dd; letter-spacing:.02em; }
+  .hero .note { margin-top: 22px; font-size: 14px; color:#aeb7dd; }
+  .hero .badges { display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 0; }
+  .hero .badge { font-size:13px; font-weight:700; padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.20); color:#dfe4fb; }
+  a.badge:hover { background:rgba(255,255,255,.18); text-decoration:none; }
+  .hero p.why { font-size:15px; line-height:1.6; color:#b9c1e6; max-width:648px; margin:18px 0 0; border-left:2px solid rgba(126,231,255,.5); padding-left:15px; }
+
+  /* sections */
+  main section { padding: 64px 0; border-bottom: 1px solid var(--line); }
+  main section:nth-of-type(even){ background: var(--bg-soft); }
+  .lead { font-size: 18.5px; color: var(--body); }
+
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 22px; }
+  .card { position: relative; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 20px; box-shadow: var(--shadow); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: #d7dbec; }
+  .card h3 { margin: 4px 0 6px; }
+  .card .ico { width: 34px; height: 34px; border-radius: 9px; display:grid; place-items:center; font-size: 18px;
+               background: linear-gradient(180deg, var(--accent-soft), #fff); border:1px solid var(--line); }
+  .card.accent { border-color: #d7d9ff; }
+  .card.accent::before { content:""; position:absolute; left:0; top:16px; bottom:16px; width:3px; border-radius:3px; background: linear-gradient(180deg,var(--accent),var(--accent-2)); }
+
+  .callout { position: relative; background: linear-gradient(180deg,#fbfcff,#f4f6ff); border: 1px solid #dfe3ff; border-left: 4px solid var(--accent);
+             border-radius: 12px; padding: 16px 18px; margin: 22px 0; box-shadow: var(--shadow); }
+  .callout.win { background: linear-gradient(180deg,#f2fbf6,#eafaf1); border-color:#bfe9d3; border-left-color: var(--ok); }
+  .steps { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:20px 0 2px; }
+  .step { display:inline-block; background:var(--accent-soft); border:1px solid #d9ddff; border-radius:999px; padding:8px 15px; font-weight:800; color:var(--ink); letter-spacing:-.01em; }
+  .sarrow { color:var(--muted); font-weight:800; }
+
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; }
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 5px; color:#3a3f52; }
+  pre { background: #0d1220; color:#e7ecff; border: 1px solid #1b2340; border-radius: 12px; padding: 16px 18px; overflow-x:auto; line-height:1.55; box-shadow: var(--shadow); }
+  pre code { background: none; padding: 0; color: inherit; }
+
+  /* tables */
+  .tablecard { border: 1px solid var(--line); border-radius: 13px; overflow: hidden; box-shadow: var(--shadow); margin-top: 18px; background:#fff; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  thead th { text-align: left; padding: 12px 14px; background: #f3f4fb; color: var(--muted); font-weight: 700; font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even){ background: #fbfbfe; }
+  .rowjev { background: #f2f4ff !important; }
+  .yes { color: var(--ok); font-weight: 700; }
+  .no { color: var(--muted); }
+  .part { color: var(--warn); font-weight: 700; }
+
+  ul.clean { padding-left: 0; list-style: none; margin-top: 14px; }
+  ul.clean li { position: relative; padding-left: 26px; margin: 9px 0; }
+  ul.clean li::before { content:""; position:absolute; left: 4px; top: 10px; width: 8px; height: 8px; border-radius: 3px; background: linear-gradient(180deg,var(--accent),var(--accent-2)); }
+
+  .pill { display:inline-block; font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; }
+  .pill.soon { background: var(--warn-soft); color: var(--warn); }
+  .pill.prelim { background: var(--accent-soft); color: var(--accent); }
+  .pill.live { background: var(--ok-soft); color: var(--ok); }
+
+  footer { padding: 44px 0 66px; color: var(--muted); font-size: 14.5px; background:#0d1220; }
+  footer, footer p { color:#98a2c4; }
+  footer a { color:#c3caea; text-decoration: underline; }
+  footer .brand { color:#fff; }
+
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; } html{ scroll-behavior:auto; } }
+  @media (max-width: 640px){ .grid { grid-template-columns: 1fr; } main section{ padding: 48px 0; } }
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="wrap">
+  <a class="brand" href="index.html">Jev<span class="dot">Gym</span></a>
+  <span class="links">
+    <a href="index.html">← Overview</a>
+    <a href="#results">Results</a>
+    <a href="beat-jev.html">Beat Jev</a>
+    <a href="evaluate.html">Evaluate Jev</a>
+    <a class="nav-cta" href="https://github.com/ruyianry/JevGym">GitHub</a>
+  </span>
+</div></nav>
+
+<header class="hero"><div class="wrap"><div class="hero-inner">
+  <span class="eyebrow">JevGym · Kalshi component</span>
+  <h1>Jev vs. the market on <span class="grad">Kalshi</span></h1>
+  <p class="lede">A timestamped Kalshi benchmark and trading arena. Every prediction is made with only the information that existed at the time, then scored against what actually happened — calibration and realized profit.</p>
+  <p class="why"><strong>Why Kalshi first?</strong> Its markets quote a <strong>direct probability</strong> for every event — continuously updated, and <strong>directly comparable to Jev's</strong> probabilistic output (probability in, probability out). JevGym isn't limited to Kalshi; the benchmark will be <strong>populated from many sources</strong>. Kalshi is simply the cleanest first case study.</p>
+  <div class="cta">
+    <a class="btn primary" href="#results">See the results →</a>
+    <a class="btn play" href="beat-jev.html">🎮 Can you beat Jev?</a>
+    <a class="btn ghost" href="#quickstart">Run it offline</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>jev-1.13.0</b><span>live, benchmarked</span></div>
+    <div class="stat"><b>720</b><span>checkpoints replayed</span></div>
+    <div class="stat"><b style="color:#5ff0b0">+11.8%</b><span>avg return / contract</span></div>
+    <div class="stat"><b>leakage-safe</b><span>as-of-timestamp evidence</span></div>
+  </div>
+  <p class="note">The arena also supports other System-One models — <span class="pill soon">results coming soon</span></p>
+  <div class="badges">
+    <a class="badge" href="https://github.com/ruyianry/JevGym">⭐ Star on GitHub</a>
+    <a class="badge" href="beat-jev.html">🎮 Can you beat Jev?</a>
+    <span class="badge">🗂️ 3 categories live · more soon</span>
+  </div>
+</div></div></header>
+
+<main>
+
+<section id="why"><div class="wrap reveal">
+  <span class="eyebrow">Why it matters</span>
+  <h2>Readjusting the market toward the truth</h2>
+  <p class="lead">A market price is just the crowd's probability that something happens. When the crowd is off and a model is right, that gap is a <strong>mispricing</strong> — and a model that sees it can help nudge the price back toward reality.</p>
+  <p>We don't aim to extract arbitrage — JevGym gives models a chance to <strong>readjust the market</strong>. The headline metric is still <strong>reward</strong>: it measures how much a model would move the price toward the truth (its edge vs the crowd, held to resolution). Being accurate is nice; being accurate <em>where the market is wrong</em> is what moves prices.</p>
+  <p class="muted">Built to be forked — in the spirit of nanoGPT and llama.cpp: small, readable, runs offline on your laptop, and adding a model is one small adapter.</p>
+</div></section>
+
+<section id="how"><div class="wrap reveal">
+  <span class="eyebrow">How it works</span>
+  <h2>State → bet → reveal</h2>
+  <p>For every resolved market we build <strong>snapshots</strong> at fixed horizons before it closes and at fractions of its lifetime. Each snapshot separates the public state, the market state, and the outcome — the renderer decides what a model sees.</p>
+  <div class="steps">
+    <span class="step">① State</span><span class="sarrow">→</span>
+    <span class="step">② Bet</span><span class="sarrow">→</span>
+    <span class="step">③ Reveal</span><span class="sarrow">→</span>
+    <span class="step">④ Score</span>
+  </div>
+  <p class="muted">Two tracks — <strong>blind</strong> (no price) and <strong>market-aware</strong> (sees the crowd) — plus the <strong>arena</strong>, where the model trades its edge and is scored on realized P&amp;L. The eventual outcome is the only oracle.</p>
+  <div class="callout"><strong>The leakage rule.</strong> Every piece of evidence carries a public-availability timestamp, and <code>available_at ≤ snapshot.timestamp</code> is enforced. When an agent searches the web, results are bounded to the same moment via the Internet Archive — it reads the past, not the future.</div>
+</div></section>
+
+<section id="results"><div class="wrap reveal">
+  <span class="eyebrow">Case study · Weather <span class="pill prelim">preliminary</span></span>
+  <h2>Jev outperforms the market on Kalshi</h2>
+  <p class="lead">Our first case study is <strong>weather</strong> — Kalshi daily-temperature markets. Jev matches the crowd on the clearer markets and <strong>trades them at a profit 🤑</strong>, with real room to grow on the hard ones. <strong>This is one category — more to come.</strong></p>
+  <p>First live run: <strong>jev-1.13.0</strong> on <strong>72 real, already-resolved</strong> markets (720 held-out checkpoints). Every bet uses only pre-resolution state; then the outcome is revealed and scored. Reward (arena P&amp;L, real <strong>$$</strong>) is the headline; Brier is the calibration check.</p>
+
+  <h3>Profit by difficulty — easy to hard</h3>
+  <p class="muted">"Difficulty" is how uncertain the <em>market itself</em> is: a near-0/near-1 price is easy, a coin-flip price is hard. Arena return is realized P&amp;L per $1 contract.</p>
+  <div class="tablecard"><table>
+    <thead><tr><th>Difficulty</th><th>Jev arena return / contract</th></tr></thead>
+    <tbody>
+      <tr class="rowjev"><td><strong>Easy</strong> (market ~certain)</td><td class="yes">+2.4%</td></tr>
+      <tr><td><strong>Medium</strong></td><td class="yes">+0.4%</td></tr>
+      <tr class="rowjev"><td><strong>Hard</strong> (market ~coin-flip)</td><td class="yes">+7.4%</td></tr>
+      <tr><td><em>Before the market has a price</em></td><td class="yes">+26.9%</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="clean">
+    <li><strong>Profitable across every difficulty band</strong> — and it earns most where the market is least sure.</li>
+    <li><strong>Before a contract is even priced</strong>, Jev already has signal the crowd doesn't.</li>
+    <li><strong>Arena overall:</strong> <strong style="color:var(--ok)">+11.8%</strong> average return per contract (49 wins / 20 losses).</li>
+  </ul>
+  <div class="callout"><strong>New — a multi-day horizon (preliminary).</strong> Beyond the one-shot bet above, the arena now also replays a <strong>~1-week</strong> window where Jev re-forecasts and re-bets <em>each day</em>, compounding conviction as the price drifts. Early live runs show it behaves like leverage — it <strong>amplifies Jev's edge where it has one</strong> (rate-threshold markets lift further with the horizon) and, honestly, compounds losses on the hard markets where it doesn't (storm counts). Full multi-day tables are being finalized <span class="pill prelim">preliminary</span>.</div>
+  <div class="callout"><strong>Want the full calibration breakdown?</strong> Per-category Brier, log-loss, ECE and clustered-bootstrap intervals are shared with collaborators — <a href="mailto:jevarena@proton.me">get in touch</a>.</div>
+
+  <h3>What actually happens — one bet, revealed</h3>
+  <div class="grid">
+    <div class="card accent"><div class="ico">✅</div><h3 class="yes" style="margin-top:2px">State → bet → reveal</h3><p class="muted"><code>KXHIGHLAX-26SEP20-B82.5</code> — "LA high 82–83°F". Jev forecast P(YES)=0.11 (confident no). Settled <strong>NO</strong>. Return <strong>+50%</strong>.</p></div>
+    <div class="card"><div class="ico">🎮</div><h3 style="margin-top:2px">Try it yourself</h3><p class="muted">Six resolved questions, one per category, with a slider — see if you can out-forecast Jev. <a href="beat-jev.html"><strong>Play →</strong></a></p></div>
+  </div>
+  <p class="muted" style="margin-top:14px">Return = realized P&amp;L as a % of the $1 contract. Reward, not accuracy, is the headline.</p>
+
+  <div class="callout"><strong>Your turn 🎮.</strong> Think you can read these markets better than Jev? <a href="beat-jev.html"><strong>Play "Can you beat Jev?" →</strong></a> — six resolved questions, one per category, with a slider.</div>
+  <div class="callout"><strong>Other models.</strong> The arena is open to any System-One model — same markets, same renderer, same scoring, never copied numbers. Those results are <span class="pill soon">coming soon</span>.</div>
+</div></section>
+
+<section id="categories"><div class="wrap reveal">
+  <span class="eyebrow">Coverage</span>
+  <h2>🗂️ Categories — three live, more coming</h2>
+  <p>The deep-dive case study above is weather; <strong>crypto</strong> and <strong>the Fed</strong> are now live too. The same pipeline extends to every Kalshi category, each becoming its own leaderboard with its own reward 🤑. Politics and elections stay behind an opt-in gate and are excluded from the default set.</p>
+  <div class="tablecard"><table>
+    <thead><tr><th>Category</th><th>Status</th><th>What's in it</th></tr></thead>
+    <tbody>
+      <tr class="rowjev"><td><strong>Weather</strong> — temperature · rain · storms</td><td><span class="pill live">✅ live</span></td><td>Temperature is the case study above — Jev <strong>+11.8% avg return</strong> across 72 markets. Storm (tornado) markets now scored through the full snapshot pipeline (early sample, n=6, calibration being tightened); rain has no settled markets yet <span class="pill prelim">preliminary</span></td></tr>
+      <tr class="rowjev"><td><strong>Crypto</strong> — daily BTC thresholds</td><td><span class="pill live">✅ live</span></td><td>Jev near-perfect here (Brier 0.02) — mostly easy, market prices still sparse <span class="pill prelim">preliminary</span></td></tr>
+      <tr class="rowjev"><td><strong>Economics &amp; the Fed</strong> — rate · FOMC decision</td><td><span class="pill live">✅ live</span></td><td>Jev real signal on rate thresholds (Brier 0.21, 64% acc; +9% on 22 arena trades); FOMC-decision markets now scored through the full pipeline (early sample, n=6) <span class="pill prelim">preliminary</span></td></tr>
+      <tr><td>Financials &amp; companies</td><td><span class="pill soon">🔜 soon</span></td><td>earnings beats, guidance, price ranges, IPOs</td></tr>
+      <tr><td>Sports</td><td><span class="pill soon">🔜 soon</span></td><td>games, matches, tournaments</td></tr>
+      <tr><td>Science &amp; technology</td><td><span class="pill soon">🔜 soon</span></td><td>launches, releases, records</td></tr>
+      <tr><td>World &amp; climate</td><td><span class="pill soon">🔜 soon</span></td><td>global events, climate metrics</td></tr>
+      <tr><td>Entertainment</td><td><span class="pill soon">🔜 soon</span></td><td>awards, box office, culture</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted" style="margin-top:12px">Reward (real $$) is scored per category, so you can see exactly where a model beats the market — and where it doesn't.</p>
+</div></section>
+
+<section id="honest"><div class="wrap reveal">
+  <span class="eyebrow">No leakage</span>
+  <h2>Keeping it honest</h2>
+  <p>A large model can memorize outcomes that were public before it was trained. So any LLM-backed forecaster is scored only on markets that resolve <em>after its public release date plus a buffer</em> (three months by default), or after one global cutoff for a strict head-to-head. Anything a model could have trained on is dropped before scoring.</p>
+</div></section>
+
+<section id="data"><div class="wrap reveal">
+  <span class="eyebrow">The dataset</span>
+  <h2>KalshiJev — a subset of the JevGym dataset and benchmark</h2>
+  <p><strong>KalshiJev</strong> is the Kalshi <strong>subset</strong> of the <strong>JevGym</strong> dataset (more sources to follow as their own subsets). Markets normalize into one schema with configs for <code>markets</code>, <code>price_history</code>, <code>evidence</code>, and <code>snapshots</code>. Splits are chronological and grouped by event, so no event straddles train and test.</p>
+  <div class="callout win"><strong>Build it yourself.</strong> KalshiJev is a spec, not a data drop — the tools reproduce it from data <strong>you</strong> fetch under each source's Terms of Service. The repo ships code only and republishes no operator data. <em>(Kalshi's Data Terms restrict training and redistribution without prior consent — comply with them; see the <a href="DISCLAIMER.md">disclaimer</a>.)</em></div>
+</div></section>
+
+<section id="quickstart"><div class="wrap reveal">
+  <span class="eyebrow">Run it</span>
+  <h2>Offline in one command block</h2>
+  <p>The whole pipeline runs offline on bundled sample data — no keys, network, or GPU.</p>
+  <pre><code>pip install -e ".[dev,hf]"
+
+jevgym ingest kalshi --from-fixtures
+jevgym parse &amp;&amp; jevgym build-snapshots &amp;&amp; jevgym validate
+jevgym eval --agents kalshi_market,mock --track both</code></pre>
+  <p>Set a key in <code>.env</code> to benchmark Jev live on real resolved markets:</p>
+  <pre><code>jevgym eval --agents kalshi_market,jev --track both</code></pre>
+  <p class="muted">Other System-One models plug in the same way — one small adapter each.</p>
+</div></section>
+
+<section id="collaborate"><div class="wrap reveal">
+  <span class="eyebrow">Collaborate</span>
+  <h2>🤝 Seeking collaborators</h2>
+  <p>JevGym is active research, and we are looking for collaborators: research groups on difficulty curation, calibration, and agentic forecasting; teams who want a System-One model benchmarked; and quantitative or hedge-fund partners interested in working together.</p>
+  <div class="cta"><a class="btn primary" href="mailto:jevarena@proton.me">Get in touch →</a></div>
+</div></section>
+
+</main>
+
+<footer><div class="wrap">
+  <p><a class="brand" href="index.html">Jev<span style="color:var(--accent-2)">Gym</span></a> · <a href="index.html">Overview</a> · <a href="beat-jev.html">Beat Jev</a> · <a href="https://github.com/ruyianry/JevGym">GitHub</a> · <a href="mailto:jevarena@proton.me">jevarena@proton.me</a></p>
+  <p style="font-size:13px;opacity:.85">Independent research — <strong>not affiliated with Kalshi</strong> or any market operator; trademarks belong to their owners. Market data is used under Kalshi's Terms of Service (only derived records are shared; raw payloads are not redistributed). Not financial advice. See the <a href="DISCLAIMER.md">disclaimer</a>.</p>
+</div></footer>
+
+<script>
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function(e){ e.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    els.forEach(function(e){ io.observe(e); });
+  })();
+</script>
+
+</body>
+</html>

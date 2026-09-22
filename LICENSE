@@ -1,0 +1,74 @@
+JevGym Research and Non-Commercial License, Version 1.0
+
+Copyright (c) 2026 the JevGym authors. All rights reserved.
+
+This is a SOURCE-AVAILABLE license. It is NOT an open-source license. It lets the research
+community study, reproduce, and build on this work while the copyright holder retains all
+commercial rights (so commercial use, including by financial firms, can be licensed separately).
+
+1. DEFINITIONS
+   "Software" means the software, source code, models, configurations, and documentation in
+   this repository. It excludes the "Dataset" and any third-party materials, each governed by
+   their own terms.
+   "Non-Commercial Purpose" means research, academic study, teaching, evaluation, benchmarking,
+   journalism, personal experimentation, and the publication of academic or scholarly results,
+   in each case not primarily intended for or directed toward commercial advantage or monetary
+   compensation.
+   "Commercial Purpose" means any use primarily intended for or directed toward commercial
+   advantage or monetary compensation, including without limitation use in or to support
+   trading, investment, market-making, or asset management (including by or for a hedge fund,
+   proprietary trading firm, bank, or other financial institution); offering the Software as a
+   hosted or paid service; or incorporating it into a commercial product or service.
+
+2. GRANT (NON-COMMERCIAL)
+   Subject to this license, the copyright holder grants you a worldwide, royalty-free,
+   non-exclusive, non-transferable, non-sublicensable license to use, reproduce, modify, and
+   create derivative works of the Software solely for a Non-Commercial Purpose.
+
+3. ACADEMIC PUBLICATION
+   For the avoidance of doubt, you may publish academic or scholarly papers, theses, posters,
+   and results that describe, evaluate, or use the Software, and may reproduce limited portions
+   of the Software in such publications, with attribution.
+
+4. CONDITIONS
+   (a) You must retain this license, the copyright notice, and any attribution notices in copies
+       and derivative works.
+   (b) You must not use the Software for a Commercial Purpose without a separate commercial
+       license from the copyright holder (Section 5).
+   (c) You receive no rights in the copyright holder's names, logos, or trademarks.
+   (d) If you distribute the Software or a derivative work, you must do so under this same
+       license and make the corresponding source available to your recipients.
+
+5. COMMERCIAL LICENSE
+   Commercial use is available under a separate commercial license. To obtain one (including for
+   hedge-fund, trading, investment, or other commercial collaboration) contact the copyright
+   holder at: jevarena@proton.me. The copyright holder welcomes commercial collaboration.
+
+6. DATASET AND THIRD-PARTY MATERIALS
+   Any dataset published or referenced by this project, and any third-party code, models, or
+   data, are governed by their own terms, which may differ from and further restrict this
+   license. See the dataset card and NOTICE. Nothing here grants rights you do not have in
+   third-party or source data (for example, prediction-market or weather-provider terms).
+
+7. TERMINATION
+   This license terminates automatically if you breach it. On termination you must stop using
+   and distributing the Software. Sections 6, 8, and 9 survive termination.
+
+8. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+   THE SOFTWARE IS NOT FINANCIAL OR INVESTMENT ADVICE.
+
+9. LIMITATION OF LIABILITY
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR
+   ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM OR IN CONNECTION WITH THE SOFTWARE OR ITS
+   USE.
+
+-------------------------------------------------------------------------------
+NOTE (not part of the license): This text is a template provided for convenience and is NOT
+legal advice. Before relying on it: (1) the copyright holder is set to "the JevGym authors" —
+replace it with your legal name or entity if you prefer (contact is jevarena@proton.me);
+(2) confirm you actually own or may license this work, including any employer intellectual-
+property assignment or open-source policy that may apply to you; and (3) have qualified counsel
+review it. A well-known equivalent you may prefer is the PolyForm Noncommercial License 1.0.0
+(https://polyformproject.org/licenses/noncommercial/1.0.0/).

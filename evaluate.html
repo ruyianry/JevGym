@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Evaluate Jev — JevGym</title>
+<meta name="description" content="Bring your own Jev API key (it stays in your browser), give Jev context, ask a yes/no question, and see Jev's probability live. Then reveal the outcome and compare." />
+<style>
+  :root{ --ink:#0d1017; --body:#232a36; --muted:#667085; --line:#e8eaf0; --bg:#fff; --bg-soft:#f7f8fc;
+    --accent:#4f46e5; --accent-2:#06b6d4; --accent-soft:#eef0ff; --ok:#0a8f57; --ok-soft:#e7f7ef; --bad:#c0392b; --radius:13px;
+    --shadow:0 1px 2px rgba(16,19,23,.04),0 12px 32px rgba(16,19,23,.06); --maxw:760px; }
+  *{box-sizing:border-box;} html{scroll-behavior:smooth;}
+  body{margin:0;color:var(--body);background:var(--bg);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji",sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px;}
+  nav.top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line);}
+  nav.top .wrap{display:flex;align-items:center;gap:16px;height:58px;}
+  .brand{font-weight:800;letter-spacing:-.02em;color:var(--ink);font-size:18px;} .brand .dot{color:var(--accent);}
+  nav.top .links{margin-left:auto;display:flex;gap:18px;align-items:center;} nav.top .links a{color:var(--body);font-size:14.5px;font-weight:600;}
+  header.hero{position:relative;overflow:hidden;color:#eef1ff;background:radial-gradient(900px 360px at 80% -10%,rgba(6,182,212,.28),transparent 60%),radial-gradient(1000px 440px at 10% 0,rgba(99,102,241,.42),transparent 62%),linear-gradient(160deg,#0b1020,#0d1330 55%,#0a0f22);}
+  .hero-inner{position:relative;padding:56px 0 48px;}
+  .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#cdd5ff;background:rgba(255,255,255,.10);padding:5px 11px;border-radius:999px;margin-bottom:14px;}
+  h1{font-size:clamp(30px,5vw,44px);line-height:1.06;letter-spacing:-.03em;margin:0 0 12px;color:#fff;font-weight:850;}
+  h1 .grad{background:linear-gradient(92deg,#a9b4ff,#7ee7ff 60%,#b9f5e6);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{color:#c7cef0;margin:0;max-width:620px;}
+  main{padding:34px 0 10px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin:16px 0;}
+  .card h3{margin:0 0 10px;color:var(--ink);font-size:16px;}
+  label{display:block;font-weight:700;color:var(--ink);font-size:14px;margin:0 0 6px;}
+  input[type=text],input[type=password],textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:15px;background:var(--bg-soft);color:var(--ink);}
+  textarea{min-height:74px;resize:vertical;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;} .row>div{flex:1 1 200px;}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:6px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:11px;font-weight:800;font-size:16px;border:0;cursor:pointer;
+       background:linear-gradient(180deg,#6d67ff,#4f46e5);color:#fff;box-shadow:0 10px 26px rgba(79,70,229,.4);}
+  .btn:hover{transform:translateY(-1px);} .btn[disabled]{opacity:.55;cursor:default;transform:none;}
+  .lock{background:var(--ok-soft);border:1px solid #bfe9d3;color:var(--ok);border-radius:8px;padding:2px 9px;font-size:12px;font-weight:700;}
+  .result{display:none;margin-top:16px;} .result.show{display:block;}
+  .bars{display:grid;grid-template-columns:52px 1fr 74px;gap:8px 12px;align-items:center;font-size:14px;margin-top:6px;}
+  .track{height:14px;border-radius:999px;background:#eef0f6;overflow:hidden;position:relative;}
+  .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#4f46e5,#06b6d4);}
+  .num{text-align:right;font-variant-numeric:tabular-nums;}
+  .err{background:#fdece9;border:1px solid #f3c0b6;color:var(--bad);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:14px;}
+  .callout{background:linear-gradient(180deg,#fbfcff,#f4f6ff);border:1px solid #dfe3ff;border-left:4px solid var(--accent);border-radius:11px;padding:14px 16px;margin:18px 0;font-size:14.5px;}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:var(--bg-soft);padding:2px 6px;border-radius:5px;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px;}
+  .chip{border:1px solid var(--line);background:var(--bg-soft);color:var(--body);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .12s,color .12s;}
+  .chip:hover{border-color:var(--accent);color:var(--accent);}
+  .grade{display:none;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);} .grade.show{display:block;}
+  .grade label{margin-bottom:2px;} .gbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .gbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 15px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink);}
+  .gbtn:hover{border-color:var(--accent);color:var(--accent);}
+  .verdict{margin-top:12px;padding:12px 14px;border-radius:10px;font-size:14.5px;line-height:1.5;}
+  .verdict.hit{background:var(--ok-soft);border:1px solid #bfe9d3;color:var(--ok);}
+  .verdict.miss{background:#fdece9;border:1px solid #f3c0b6;color:var(--bad);}
+  .verdict small{display:block;margin-top:5px;font-weight:600;opacity:.85;}
+  footer{padding:34px 0 60px;background:#0d1220;color:#98a2c4;font-size:13.5px;margin-top:26px;} footer a{color:#c3caea;text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="wrap">
+  <a class="brand" href="index.html">Jev<span class="dot">Gym</span></a>
+  <span class="links"><a href="kalshi.html">Kalshi report</a><a href="beat-jev.html">Beat Jev</a><a href="index.html">← Home</a></span>
+</div></nav>
+
+<header class="hero"><div class="wrap"><div class="hero-inner">
+  <span class="eyebrow">Interactive · bring your own key</span>
+  <h1>Evaluate <span class="grad">Jev</span> yourself</h1>
+  <p>Log in with your own Jev API key, give Jev any context you like, ask a yes/no question, and get its probability live. Your key stays in this browser tab — it's sent only to Jev's API, never to us.</p>
+</div></div></header>
+
+<main><div class="wrap">
+
+  <div class="card">
+    <h3>1 · Log in to the Jev API <span id="keyState" class="lock" style="display:none">key loaded ✓</span></h3>
+    <label for="key">Your TypeSafe / Jev API key</label>
+    <input type="password" id="key" placeholder="sk-… (kept in this tab only)" autocomplete="off" />
+    <div class="hint">Stored in memory only (never localStorage, never sent to us). Cleared when you close the tab. It is sent directly to <code>api.typesafe.ai</code> over HTTPS. Prefer not to paste a key in a browser? Use the <code>jevgym</code> CLI with a local <code>.env</code> instead.</div>
+    <div class="row" style="margin-top:10px">
+      <div><label for="base">API base (advanced)</label><input type="text" id="base" value="https://api.typesafe.ai" /></div>
+      <div><label for="model">Model</label><input type="text" id="model" value="jev-latest" /></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2 · Give Jev context <span style="color:var(--muted);font-weight:400">(optional)</span></h3>
+    <textarea id="ctx" placeholder="Anything Jev should know as state — background, evidence, the situation so far…"></textarea>
+    <div class="hint">This becomes the decision <em>state</em>. Leave blank to test Jev cold.</div>
+  </div>
+
+  <div class="card">
+    <h3>3 · Ask a question</h3>
+    <div class="hint" style="margin:0 0 6px">Or start from a real Kalshi-style question:</div>
+    <div class="chips" id="examples"></div>
+    <label for="q">Question</label>
+    <input type="text" id="q" placeholder="e.g. Will it rain in Chicago tomorrow?" />
+    <div class="row" style="margin-top:10px">
+      <div><label for="cands">Answers (comma-separated)</label><input type="text" id="cands" value="YES, NO" /></div>
+    </div>
+    <button class="btn" id="ask" style="margin-top:16px">Ask Jev →</button>
+    <div class="result" id="result"></div>
+    <div class="grade" id="grade">
+      <label>Now evaluate Jev on the answer — what actually happened?</label>
+      <div class="hint" style="margin-top:0">Pick the true outcome to grade Jev's call (accuracy + how much probability it put on the truth).</div>
+      <div class="gbtns" id="gbtns"></div>
+      <div id="verdict"></div>
+    </div>
+    <div id="errbox"></div>
+  </div>
+
+  <div class="callout">
+    <strong>Then compare.</strong> Once the event resolves, you can see whether Jev's probability was closer to the truth than the market — that's the whole JevGym idea. Try the pre-baked version first: <a href="beat-jev.html">Can you beat Jev?</a>
+  </div>
+
+</div></main>
+
+<footer><div class="wrap">
+  <p><a href="index.html">← JevGym</a> · Independent research, not affiliated with Kalshi or TypeSafe; your key is never sent to us. Not financial advice. See the <a href="DISCLAIMER.md">disclaimer</a>.</p>
+</div></footer>
+
+<script>
+  const $ = id => document.getElementById(id);
+  $('key').addEventListener('input', () => { $('keyState').style.display = $('key').value.trim() ? 'inline-block' : 'none'; });
+
+  // Real Kalshi-flavoured starters so people don't face a blank box.
+  const EXAMPLES = [
+    { label:'🌡️ Miami daily high', q:"Will Miami's daily high temperature be 90–91°F (≈32–33°C) today?",
+      ctx:"Kalshi bins the day's official high into 1°F brackets. Resolves YES only if the high lands in 90–91°F.", cands:"YES, NO" },
+    { label:'₿ BTC threshold', q:"Will Bitcoin close above $92,800 today?",
+      ctx:"Daily Kalshi BTC market. Resolves YES if the reference close is strictly above the strike.", cands:"YES, NO" },
+    { label:'🏛️ Fed rate', q:"Will the Fed's upper target rate be above 5.25% at the next decision?",
+      ctx:"Kalshi 'Above X%' rate market resolving on the FOMC announcement.", cands:"YES, NO" },
+    { label:'🌪️ US tornadoes', q:"Will there be more than 75 tornadoes in the U.S. this month?",
+      ctx:"Kalshi counts NWS-confirmed tornado reports for the month. Resolves YES above 75.", cands:"YES, NO" },
+  ];
+  function fillExample(ex){ $('q').value = ex.q; $('ctx').value = ex.ctx; $('cands').value = ex.cands;
+    $('grade').className='grade'; $('result').className='result'; $('errbox').innerHTML=''; }
+  (function renderChips(){ const host=$('examples');
+    EXAMPLES.forEach(ex=>{ const b=document.createElement('button'); b.className='chip'; b.type='button';
+      b.textContent=ex.label; b.addEventListener('click',()=>fillExample(ex)); host.appendChild(b); }); })();
+
+  let LAST = null;  // { cands, probs, top } from the most recent successful ask, for grading.
+  function showGrade(cands){ const host=$('gbtns'); host.innerHTML='';
+    cands.forEach(c=>{ const b=document.createElement('button'); b.className='gbtn'; b.type='button';
+      b.textContent=c; b.addEventListener('click',()=>gradeJev(c)); host.appendChild(b); });
+    $('verdict').innerHTML=''; $('grade').className='grade show'; }
+  function gradeJev(truth){
+    if(!LAST) return; const {cands,probs,top}=LAST;
+    const pTruth=probs[truth]||0, hit=top===truth, binary=cands.length===2;
+    // Match the benchmark's scoring: standard binary Brier (single event) for YES/NO,
+    // generalizing to the multi-class sum-of-squares only when there are >2 answers.
+    const brier = binary
+      ? Math.pow((probs[cands[0]]||0) - (truth===cands[0]?1:0), 2)
+      : cands.reduce((s,c)=>s+Math.pow((probs[c]||0)-(c===truth?1:0),2),0);
+    const scale = binary ? '0 = perfect, 0.25 = a coin-flip, 1 = worst' : '0 = perfect; lower is better';
+    const v=$('verdict'); v.className='verdict '+(hit?'hit':'miss');
+    v.innerHTML = (hit
+        ? `✓ Jev was right — it favoured <b>${top}</b> and the answer was <b>${truth}</b>.`
+        : `✗ Jev missed — it favoured <b>${top}</b> (${(probs[top]*100).toFixed(0)}%) but the answer was <b>${truth}</b>.`)
+      + `<small>Jev put <b>${(pTruth*100).toFixed(0)}%</b> on the truth · Brier ${brier.toFixed(3)} `
+      + `(${scale}). This is exactly how JevGym scores every market.</small>`;
+  }
+
+  function parseProbs(data, qid, cands){
+    const a = ((data.answers||{})[qid]) || data.answer || {};
+    let out = {};
+    if (a && typeof a.probabilities === 'object' && a.probabilities) {
+      cands.forEach(c => out[c] = +(a.probabilities[c] ?? 0));
+    } else if (a && a.probability != null && cands.length === 2) {
+      const p = Math.min(1, Math.max(0, +a.probability)); out[cands[0]] = p; out[cands[1]] = 1 - p;
+    } else if (a && a.choice && cands.includes(a.choice)) {
+      cands.forEach(c => out[c] = c === a.choice ? 1 : 0);
+    } else { cands.forEach(c => out[c] = 1 / cands.length); }
+    const tot = cands.reduce((s,c)=>s+Math.max(0,out[c]||0),0) || 1;
+    cands.forEach(c => out[c] = Math.max(0,out[c]||0)/tot);
+    return out;
+  }
+
+  async function ask(){
+    const key = $('key').value.trim();
+    const errbox = $('errbox'); errbox.innerHTML='';
+    const res = $('result'); res.className='result'; res.innerHTML='';
+    $('grade').className='grade'; LAST=null;
+    if (!key){ errbox.innerHTML = '<div class="err">Enter your Jev API key first (step 1).</div>'; return; }
+    const q = $('q').value.trim();
+    if (!q){ errbox.innerHTML = '<div class="err">Type a question (step 3).</div>'; return; }
+    const cands = $('cands').value.split(',').map(s=>s.trim()).filter(Boolean);
+    if (cands.length < 2){ errbox.innerHTML = '<div class="err">Give at least two answers, e.g. <code>YES, NO</code>.</div>'; return; }
+    const base = $('base').value.trim().replace(/\/+$/,'') || 'https://api.typesafe.ai';
+    const model = $('model').value.trim() || 'jev-latest';
+    const isBool = cands.length===2 && cands.map(c=>c.toUpperCase()).sort().join()==='NO,YES';
+    const criteria = {}; cands.forEach(c=>criteria[c]=c);
+    const payload = { model, state: $('ctx').value.trim(), questions: { q: { type: isBool?'boolean':'choice', instructions: q, criteria } } };
+    const btn = $('ask'); btn.disabled=true; btn.textContent='Asking Jev…';
+    const t0 = performance.now();
+    try{
+      const r = await fetch(base + '/v1/systemone', {
+        method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+key }, body: JSON.stringify(payload)
+      });
+      const lat = Math.round(performance.now()-t0);
+      if (!r.ok){
+        let msg = 'HTTP '+r.status; try { const j = await r.json(); msg += ' — ' + (j.detail?.message || j.error || JSON.stringify(j).slice(0,140)); } catch(e){}
+        errbox.innerHTML = '<div class="err">'+msg+(r.status===401||r.status===403?' (check your key)':'')+'</div>'; return;
+      }
+      const data = await r.json();
+      const probs = parseProbs(data, 'q', cands);
+      const top = cands.slice().sort((a,b)=>probs[b]-probs[a])[0];
+      const bars = cands.map(c=>`<div>${c}</div><div class="track"><div class="fill" style="width:${(probs[c]*100).toFixed(0)}%"></div></div><div class="num">${(probs[c]*100).toFixed(0)}%</div>`).join('');
+      res.className='result show';
+      res.innerHTML = `<div class="bars">${bars}</div>
+        <p style="margin:12px 0 2px"><strong>Jev's pick:</strong> ${top} · <span style="color:var(--muted)">model ${data.model||model} · ${lat} ms</span></p>`;
+      LAST = { cands, probs, top }; showGrade(cands);
+    }catch(e){
+      errbox.innerHTML = '<div class="err">Request failed: '+ (e.message||e) +'.<br>Jev\'s API may not allow direct browser calls (CORS). If so, run it locally with the CLI:<br><code>jevgym eval --agents jev</code> (key in <code>.env</code>), or proxy the request server-side.</div>';
+    }finally{ btn.disabled=false; btn.textContent='Ask Jev →'; }
+  }
+  $('ask').addEventListener('click', ask);
+</script>
+
+</body>
+</html>

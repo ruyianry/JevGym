@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JevGym — measuring the Jev-series models' capacity</title>
+<meta name="description" content="JevGym measures the capacity of the Jev-series decision models on real-world probabilistic forecasting. A timestamped benchmark + trading arena, growing fast across many data sources — starting with Kalshi." />
+<style>
+  :root{
+    --ink:#0d1017; --body:#232a36; --muted:#667085; --line:#e8eaf0; --bg:#fff; --bg-soft:#f7f8fc;
+    --accent:#4f46e5; --accent-2:#06b6d4; --accent-soft:#eef0ff;
+    --ok:#0a8f57; --ok-soft:#e7f7ef; --warn:#b4590a; --warn-soft:#fbf1e6;
+    --radius:14px; --maxw:900px; --shadow:0 1px 2px rgba(16,19,23,.04),0 12px 32px rgba(16,19,23,.06);
+    --shadow-lg:0 2px 6px rgba(16,19,23,.06),0 24px 60px rgba(16,19,23,.10);
+  }
+  *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+  body{margin:0;color:var(--body);background:var(--bg);font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji",sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px;}
+  h2{font-size:clamp(24px,3.2vw,32px);line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin:0 0 14px;}
+  .muted{color:var(--muted);}
+  .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:5px 11px;border-radius:999px;margin-bottom:14px;}
+
+  nav.top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.78);backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid var(--line);}
+  nav.top .wrap{display:flex;align-items:center;gap:20px;height:60px;}
+  .brand{font-weight:800;letter-spacing:-.02em;color:var(--ink);font-size:18px;}
+  .brand .dot{color:var(--accent);}
+  nav.top .links{margin-left:auto;display:flex;gap:22px;align-items:center;}
+  nav.top .links a{color:var(--body);font-size:14.5px;font-weight:600;}
+  nav.top .links a:hover{color:var(--accent);text-decoration:none;}
+  .nav-cta{background:var(--ink);color:#fff !important;padding:8px 14px;border-radius:9px;}
+  @media(max-width:640px){ nav.top .links a:not(.nav-cta){display:none;} }
+
+  header.hero{position:relative;overflow:hidden;color:#eef1ff;background:radial-gradient(900px 380px at 78% -8%,rgba(6,182,212,.28),transparent 60%),radial-gradient(1000px 460px at 12% 4%,rgba(99,102,241,.42),transparent 62%),linear-gradient(160deg,#0b1020,#0d1330 55%,#0a0f22);}
+  header.hero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:radial-gradient(rgba(255,255,255,.09) 1px,transparent 1.4px);background-size:26px 26px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 78%);mask-image:linear-gradient(180deg,#000,transparent 78%);}
+  .hero-inner{position:relative;padding:78px 0 66px;}
+  .hero h1{font-size:clamp(36px,6vw,60px);line-height:1.04;letter-spacing:-.035em;margin:0 0 18px;font-weight:850;color:#fff;}
+  .hero h1 .grad{background:linear-gradient(92deg,#a9b4ff,#7ee7ff 55%,#b9f5e6);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lede{font-size:clamp(17px,2.2vw,21px);color:#c7cef0;margin:0 0 8px;max-width:660px;}
+  .hero p.why{font-size:15px;line-height:1.6;color:#b9c1e6;max-width:648px;margin:16px 0 0;border-left:2px solid rgba(126,231,255,.5);padding-left:15px;}
+  .expand{margin:22px 0 0;display:inline-flex;align-items:center;gap:9px;font-weight:700;color:#0b1020;background:linear-gradient(180deg,#8ef0c4,#39d99b);padding:9px 15px;border-radius:999px;font-size:14.5px;}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;}
+  .badge{font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);color:#dfe4fb;}
+  a.badge:hover{background:rgba(255,255,255,.18);text-decoration:none;}
+  .playbtn{display:inline-flex;align-items:center;gap:9px;margin:18px 0 0;padding:13px 22px;border-radius:12px;font-weight:800;font-size:16px;color:#0b1020;background:linear-gradient(180deg,#ffd24d,#ff8a3d);box-shadow:0 12px 30px rgba(255,138,61,.5);}
+  .playbtn:hover{transform:translateY(-2px);text-decoration:none;filter:brightness(1.04);}
+
+  main section{padding:60px 0;border-bottom:1px solid var(--line);}
+  main section:nth-of-type(even){background:var(--bg-soft);}
+  .lead{font-size:18.5px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:22px;}
+  @media(max-width:720px){ .grid{grid-template-columns:1fr;} }
+  .card{position:relative;display:block;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;color:inherit;}
+  a.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:#c9ccf5;text-decoration:none;}
+  .card.soon{opacity:.85;}
+  .card h3{margin:8px 0 6px;color:var(--ink);font-size:19px;letter-spacing:-.01em;}
+  .card .arrow{position:absolute;right:18px;top:18px;color:var(--accent);font-weight:800;}
+  .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;}
+  .pill.live{background:var(--ok-soft);color:var(--ok);} .pill.soon{background:var(--warn-soft);color:var(--warn);}
+  .callout{background:linear-gradient(180deg,#fbfcff,#f4f6ff);border:1px solid #dfe3ff;border-left:4px solid var(--accent);border-radius:12px;padding:16px 18px;margin:22px 0;box-shadow:var(--shadow);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:11px;font-weight:700;font-size:15px;background:linear-gradient(180deg,#6d67ff,#4f46e5);color:#fff;box-shadow:0 10px 26px rgba(79,70,229,.35);}
+  .btn:hover{text-decoration:none;transform:translateY(-1px);}
+  code,pre{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;}
+  code{background:var(--bg-soft);padding:2px 6px;border-radius:5px;color:#3a3f52;}
+  pre{background:#0d1220;color:#e7ecff;border-radius:12px;padding:16px 18px;overflow-x:auto;box-shadow:var(--shadow);}
+  footer{padding:44px 0 66px;background:#0d1220;color:#98a2c4;font-size:14.5px;} footer a{color:#c3caea;text-decoration:underline;} footer .brand{color:#fff;}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease;} .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){ .reveal{opacity:1;transform:none;} html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="wrap">
+  <span class="brand">Jev<span class="dot">Gym</span></span>
+  <span class="links">
+    <a href="kalshi.html">Kalshi report</a>
+    <a href="beat-jev.html">Beat Jev</a>
+    <a href="evaluate.html">Evaluate Jev</a>
+    <a class="nav-cta" href="https://github.com/ruyianry/JevGym">GitHub</a>
+  </span>
+</div></nav>
+
+<header class="hero"><div class="wrap"><div class="hero-inner">
+  <span class="eyebrow">JevGym</span>
+  <h1>Measuring the <span class="grad">Jev-series models'</span> capacity</h1>
+  <p class="lede">A timestamped benchmark and trading arena for real-world probabilistic forecasting. Every prediction uses only the information that existed at the time, then is scored against what actually happened — calibration and realized profit.</p>
+  <p class="why"><strong>Why prediction markets?</strong> They quote a <strong>direct probability</strong> for every event — continuously updated, and <strong>directly comparable to a Jev model's</strong> output (probability in, probability out).</p>
+  <div><span class="expand">🚀 We're expanding the dataset fast — more sources &amp; categories landing continuously.</span></div>
+  <div><a class="playbtn" href="beat-jev.html">🎮 Can you beat Jev? →</a></div>
+  <div style="margin-top:10px"><a class="badge" href="evaluate.html">🧪 Evaluate Jev with your own key →</a></div>
+  <div class="badges">
+    <a class="badge" href="kalshi.html">📊 Kalshi report</a>
+    <a class="badge" href="beat-jev.html">🎮 Can you beat Jev?</a>
+    <a class="badge" href="https://github.com/ruyianry/JevGym">⭐ Star on GitHub</a>
+  </div>
+</div></div></header>
+
+<main>
+
+<section id="subsets"><div class="wrap reveal">
+  <span class="eyebrow">Explore the components</span>
+  <h2>Pick a data source to dive in</h2>
+  <p class="lead">JevGym is built from many sources, each its own subset with its own leaderboard. <strong>Kalshi is live now</strong> — click in. The rest are landing soon as we expand.</p>
+  <div class="grid">
+    <a class="card" href="kalshi.html">
+      <span class="arrow">→</span>
+      <span class="pill live">✅ live</span>
+      <h3>Kalshi</h3>
+      <p class="muted">Real resolved Kalshi markets, Jev benchmarked. <strong>Weather · Crypto · the Fed</strong> live, more categories rolling in. Click to explore the report.</p>
+    </a>
+    <div class="card soon">
+      <span class="pill soon">🔜 soon</span>
+      <h3>Polymarket</h3>
+      <p class="muted">Normalizes into the same schema (Gamma + CLOB), so it slots straight into the arena alongside Kalshi.</p>
+    </div>
+    <div class="card soon">
+      <span class="pill soon">🔜 expanding</span>
+      <h3>More sources</h3>
+      <p class="muted">Additional venues and richer evidence are being added continuously — the dataset grows every week.</p>
+    </div>
+  </div>
+  <div class="callout"><strong>Speedily expanding.</strong> This is the first slice. New categories and sources are being populated continuously — check back, or ⭐ the repo to follow along.</div>
+</div></section>
+
+</main>
+
+<footer><div class="wrap">
+  <p><span class="brand">Jev<span style="color:var(--accent-2)">Gym</span></span> · <a href="kalshi.html">Kalshi report</a> · <a href="beat-jev.html">Beat Jev</a> · <a href="https://github.com/ruyianry/JevGym">GitHub</a> · <a href="mailto:jevarena@proton.me">jevarena@proton.me</a></p>
+  <p style="font-size:13px;opacity:.85">Independent research — <strong>not affiliated with Kalshi</strong> or any market operator; trademarks belong to their owners. Data is used under each source's Terms of Service; only derived records are shared. Not financial advice. See the <a href="DISCLAIMER.md">disclaimer</a>.</p>
+</div></footer>
+
+<script>
+  (function(){var els=document.querySelectorAll('.reveal');if(!('IntersectionObserver'in window)){els.forEach(e=>e.classList.add('in'));return;}
+   var io=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{rootMargin:'0px 0px -8% 0px',threshold:.06});
+   els.forEach(e=>io.observe(e));})();
+</script>
+
+</body>
+</html>

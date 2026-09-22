@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Secrets
+.env
+
+# Confidential internal notes (roadmap, honest caveats, deploy guide) — never publish.
+CONFIDENTIAL.md
+*.private.md
+
+# Local data: raw caches + derived artifacts are NOT committed (see README data policy).
+# Raw third-party API payloads especially must never be committed or published.
+data/
+!data/.gitkeep
+
+# Local agent/IDE config (contains machine-specific absolute paths; not for the public repo).
+.claude/
+
+.DS_Store

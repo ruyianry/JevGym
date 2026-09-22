@@ -1,0 +1,34 @@
+# JevArena difficulty curation — weather v1.
+# All thresholds are INITIAL design choices. Tune only on development data, then freeze this
+# file for evaluation and report sensitivity. These rules do not establish universal difficulty.
+version: difficulty_weather_v1
+domain: weather
+
+horizons:
+  # Historical timestamp is chosen as (observation-window start - offset), BEFORE prices are read.
+  primary_offset_hours: 24
+  secondary_offset_hours: 6
+
+market_quality:
+  min_market_confidence: 0.90
+  max_yes_spread: 0.05
+  max_quote_age_seconds: 3600
+  require_verified_quote_freshness: true
+
+prior:
+  years_back: 20            # up to N preceding complete years
+  seasonal_window_days: 15  # +/- days around the target day-of-year
+  min_years: 15             # minimum distinct adequately-covered years
+  smoothing_alpha: 1        # p = (k + alpha) / (n + 2*alpha)
+
+candidate:
+  min_market_confidence: 0.90
+  min_prior_confidence: 0.90
+
+selection:
+  one_per_event_per_horizon: true
+  seed: jevarena-difficulty-weather-v1
+
+rubric_version: weather-easy-rubric-v1
+annotation_version: 1
+snapshot_policy_version: weather-strict-v1
