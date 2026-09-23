@@ -94,7 +94,7 @@
 <header class="hero"><div class="wrap"><div class="hero-inner">
   <span class="eyebrow">Interactive</span>
   <h1>Can you beat <span class="grad">Jev</span>?</h1>
-  <p class="lede">Six Kalshi questions in mixed order — <strong>storms, temperature, the Fed, crypto</strong> — all ones you <strong>can't just recall</strong> (or still unresolved). Set your probability with the slider, lock it in, and see who was closest: you, Jev, or the market. Changed your mind? Hit revert.</p>
+  <p class="lede">Six Kalshi questions in mixed order — <strong>temperature, the Fed, crypto</strong> — all ones you <strong>can't just recall</strong> (or still unresolved). Set your probability with the slider, lock it in, and see who was closest: you, Jev, or the market. Changed your mind? Hit revert.</p>
 </div></div></header>
 
 <div class="score"><div class="wrap">
@@ -121,7 +121,7 @@
 <section class="note"><div class="wrap">
   <h2>Want to ask Jev your own questions <em>on Kalshi</em>?</h2>
   <p>This page uses Jev's <strong>real, pre-computed</strong> answers — nothing leaves your browser and no API key is needed here. To run Jev live on questions <em>you</em> pick, use the open-source CLI locally and keep your key in a <code>.env</code> file — the safest place for it. Never paste an API key into a web page: it can't safely reach the paid API from a browser anyway (CORS), and a page should never see your secret.</p>
-  <pre>echo "TS_TOKEN=your-key" &gt;&gt; .env      # gitignored; stays on your machine
+  <pre>echo "TYPESAFE_API_KEY=your-key" &gt;&gt; .env      # gitignored; stays on your machine
 jevgym eval --agents kalshi_market,jev --track both</pre>
   <p class="tag" style="color:var(--muted)">Weather is a real leakage-safe JevGym result. The others use Jev's real live answers; where a past-event market price is shown it's an approximate crowd estimate from the time (illustrative). The no-answer questions are genuinely open or ambiguous.</p>
 </div></section>
@@ -133,26 +133,26 @@ jevgym eval --agents kalshi_market,jev --track both</pre>
 
 <script>
 const Q = [
-  { cat:"Weather · Storms", date:"August 2026",
-    q:"Will there be more than 75 tornadoes in the U.S. in August 2026?",
-    state:"Kalshi KXTORNADO-26AUG — U.S. tornado count for the month.",
-    jev:0.45, market:0.995, y:1, lat:511 },
-  { cat:"Weather · Temp", date:"Sep 19, 2026",
-    q:"Will Miami's daily high on 2026-09-19 land in the 90–91°F (≈32–33°C) bucket?",
-    state:"Kalshi KXHIGHMIA-26SEP19-B90.5 — the high at Miami (KMIA), scored before the day.",
-    jev:0.03, market:0.185, y:1, lat:214 },
+  { cat:"Weather · Temp", date:"Sep 20, 2026",
+    q:"Will LA's daily high on 2026-09-20 land in the 82–83°F (≈28°C) bucket?",
+    state:"Kalshi KXHIGHLAX-26SEP20-B82.5 — the high at LA (KLAX), scored before the day.",
+    jev:0.11, market:0.34, y:0, lat:214 },
+  { cat:"Fed · rate", date:"Jul 2026 meeting",
+    q:"Will the Fed target rate be above 3.75% after the July 2026 meeting?",
+    state:"Kalshi KXFED-26JUL-T3.75 — the Fed funds target rate.",
+    jev:0.08, market:0.26, y:0, lat:203 },
+  { cat:"Crypto", date:"Sep 22, 2026",
+    q:"Will Bitcoin be above $150,000 on 2026-09-22?",
+    state:"Kalshi KXBTCD-26SEP22-T150000 — Bitcoin's daily level, scored before the day.",
+    jev:0.02, market:0.06, y:0, lat:311 },
+  { cat:"Fed · rate", date:"Sep 2026 meeting",
+    q:"Will the Fed target rate be above 3.75% after the September 2026 meeting?",
+    state:"Kalshi KXFED-26SEP-T3.75 — the Fed funds target rate.",
+    jev:0.76, market:0.81, y:1, lat:290 },
   { cat:"Fed · FOMC", date:"Sep 2026 meeting",
     q:"Will the Fed hike its target rate by more than 25 bps at the September 2026 FOMC?",
-    state:"Kalshi KXFEDDECISION-26SEP — the FOMC rate decision.",
-    jev:0.01, market:null, y:0, lat:290 },
-  { cat:"Crypto", date:"Sep 22, 2026",
-    q:"Will Bitcoin be above $92,800 on 2026-09-22?",
-    state:"Kalshi KXBTCD-26SEP22 — Bitcoin's daily level, scored before the day.",
-    jev:0.35, market:0.005, y:0, lat:311 },
-  { cat:"Fed · rate", date:"Sep 2026",
-    q:"Will the Fed target rate be above 5.25% after the September 2026 meeting?",
-    state:"Kalshi KXFED-26SEP — the Fed funds target rate.",
-    jev:0.12, market:null, y:0, lat:203 },
+    state:"Kalshi KXFEDDECISION-26SEP-H26 — the FOMC rate decision.",
+    jev:0.01, market:0.03, y:0, lat:290 },
   { cat:"Crypto", date:"as of 2026-09-22 · resolves 2026-12-31",
     q:"Will Bitcoin close above $150,000 at any point before the end of 2026?",
     state:"Kalshi BTC end-of-year market — still open, not resolved yet.",

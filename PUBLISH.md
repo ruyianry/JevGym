@@ -17,7 +17,7 @@ The site is plain static HTML at the repo root (`index.html`, `kalshi.html`, `be
 
 Never commit these (already in `.gitignore`, verified):
 
-- `.env` — your `TS_TOKEN` (Jev) and `HF_TOKEN`.
+- `.env` — your `TYPESAFE_API_KEY` (Jev) and `HF_TOKEN`.
 - `CONFIDENTIAL.md` — the candid internal assessment.
 - `*.private.md`, `data/` (raw API payloads + derived artifacts), `.claude/`.
 

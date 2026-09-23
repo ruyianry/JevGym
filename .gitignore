@@ -10,8 +10,10 @@ venv/
 .ruff_cache/
 .mypy_cache/
 
-# Secrets
+# Secrets — the real .env and any local variants/backups (but keep the .env.example template).
 .env
+.env.*
+!.env.example
 
 # Confidential internal notes (roadmap, honest caveats, deploy guide) — never publish.
 CONFIDENTIAL.md
@@ -19,8 +21,10 @@ CONFIDENTIAL.md
 
 # Local data: raw caches + derived artifacts are NOT committed (see README data policy).
 # Raw third-party API payloads especially must never be committed or published.
-data/
-!data/.gitkeep
+# NOTE: anchored to the repo root with a leading slash so it does NOT match the source
+# package src/jevgym/data/ (which is code and must ship).
+/data/
+!/data/.gitkeep
 
 # Local agent/IDE config (contains machine-specific absolute paths; not for the public repo).
 .claude/

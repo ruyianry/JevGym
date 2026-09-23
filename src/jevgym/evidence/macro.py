@@ -19,8 +19,9 @@ from ..models import EvidenceItem
 from ..util import parse_dt, short_hash, utcnow
 from .base import register_evidence_source
 
-# Default macro series and the domain they inform.
-DEFAULT_FRED_SERIES = ["UNRATE", "PAYEMS", "CPIAUCSL"]
+# Default macro series (the trend context for economics markets): unemployment, payrolls, CPI,
+# the fed funds rate, and real GDP — covering the CPI / payrolls / U-3 / Fed / GDP markets.
+DEFAULT_FRED_SERIES = ["UNRATE", "PAYEMS", "CPIAUCSL", "FEDFUNDS", "GDPC1"]
 
 
 @register_evidence_source

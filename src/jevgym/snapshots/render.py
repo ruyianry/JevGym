@@ -33,6 +33,16 @@ def _fmt_evidence(snapshot: Snapshot) -> str:
                 f"- [{when}] {p.get('series_id')} {p.get('title', '')} — "
                 f"{p.get('period')}: {p.get('value')} {p.get('units', '')}".rstrip()
             )
+        elif e.evidence_type == "prior_decisions":
+            recent = p.get("recent", [])
+            hist = "; ".join(
+                f"{d.get('title')} → {str(d.get('result') or '').upper()} ({d.get('settled')})"
+                for d in recent
+            )
+            lines.append(
+                f"- [{when}] Prior decisions in {p.get('series')} "
+                f"({p.get('n_prior')} settled, YES rate {p.get('yes_rate')}): {hist}"
+            )
         else:
             lines.append(f"- [{when}] {e.evidence_type}: {p}")
     return "\n".join(lines)

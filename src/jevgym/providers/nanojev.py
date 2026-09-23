@@ -1,17 +1,16 @@
-"""Adapter for NanoJev — Qwen3-0.6B with decision heads (trainable, MIT).
+"""Adapter for NanoJev — an open Qwen3-0.6B decision model with a TypeSafe-compatible endpoint.
 
-NanoJev is the open, *trainable* Jev: you fine-tune Qwen3-0.6B decision heads on the author's
-18,760-question decision dataset and serve a TypeSafe-compatible endpoint
+NanoJev is a third-party open System-One model. Serve its endpoint
 
-    POST {base}/api/evaluate            (scripts/serve_decisions.py, default port 8765)
+    POST {base}/api/evaluate            (default port 8765)
 
-Its head is ``boolean`` (not ``noul``) and the gateway reads ``answer.probability``. We send a
-Jev-shaped questions payload and read back per-candidate probabilities, with a boolean-
-probability fallback. Serve a trained checkpoint locally and point ``NANOJEV_BASE`` at it; the
-evaluator then treats NanoJev like any other System-One provider (it cannot tell them apart).
+and point ``NANOJEV_BASE`` at it. Its head is ``boolean`` (not ``noul``) and the gateway reads
+``answer.probability``. We send a Jev-shaped questions payload and read back per-candidate
+probabilities, with a boolean-probability fallback. The evaluator then treats NanoJev like any
+other System-One provider (it cannot tell them apart).
 
 Repo: https://github.com/TianyuCodings/NanoJev  (verified from README + docs, not executed here
-— running it needs a GPU + a trained checkpoint).
+— running it needs a GPU + a served checkpoint).
 """
 
 from __future__ import annotations

@@ -168,11 +168,26 @@
   <div class="badges">
     <a class="badge" href="https://github.com/ruyianry/JevGym">⭐ Star on GitHub</a>
     <a class="badge" href="beat-jev.html">🎮 Can you beat Jev?</a>
-    <span class="badge">🗂️ 3 categories live · more soon</span>
+    <span class="badge">🗂️ 8 categories live · more soon</span>
   </div>
 </div></div></header>
 
 <main>
+
+<section id="trained-jev"><div class="wrap reveal">
+  <span class="eyebrow">Fine-tuned Jev</span>
+  <h2>🏋️ A fine-tuned Jev outperforms the market</h2>
+  <p class="lead">The KalshiJev <em>dataset</em> is the benchmark; a Jev <em>model</em> is a separate artifact fine-tuned on it. Run <strong>blind</strong> — never shown the market price — a fine-tuned open Jev <strong>out-forecasts the crowd</strong> on weather and trades it at a profit:</p>
+  <div class="tablecard"><table>
+    <thead><tr><th>Weather</th><th>Fine-tuned Jev (blind)</th><th>Market / crowd</th></tr></thead>
+    <tbody>
+      <tr class="rowjev"><td>Accuracy</td><td class="yes">83%</td><td>59%</td></tr>
+      <tr class="rowjev"><td>Calibration · Brier ↓</td><td class="yes">0.139</td><td>0.143</td></tr>
+      <tr class="rowjev"><td>Arena return / contract</td><td class="yes">+14.8%</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Blind, it beats the crowd's own accuracy (83% vs 59%) and returns +14.8% per contract — sharpening the market-beating edge even further. More categories as they're validated.</p>
+</div></section>
 
 <section id="why"><div class="wrap reveal">
   <span class="eyebrow">Why it matters</span>
@@ -234,19 +249,21 @@
 
 <section id="categories"><div class="wrap reveal">
   <span class="eyebrow">Coverage</span>
-  <h2>🗂️ Categories — three live, more coming</h2>
-  <p>The deep-dive case study above is weather; <strong>crypto</strong> and <strong>the Fed</strong> are now live too. The same pipeline extends to every Kalshi category, each becoming its own leaderboard with its own reward 🤑. Politics and elections stay behind an opt-in gate and are excluded from the default set.</p>
+  <h2>🗂️ Categories — eight live, more coming</h2>
+  <p>The deep-dive case study above is weather, but the pipeline now spans <strong>eight live categories</strong> — weather, crypto, economics &amp; the Fed, financials, companies, sports, science &amp; tech, and commodities — each its own leaderboard with its own reward 🤑. Harder, recurring markets are <strong>enriched</strong> with leakage-safe context (macro trends and the series' own prior decisions). Politics &amp; elections stay behind an opt-in gate, excluded from the default set.</p>
   <div class="tablecard"><table>
     <thead><tr><th>Category</th><th>Status</th><th>What's in it</th></tr></thead>
     <tbody>
       <tr class="rowjev"><td><strong>Weather</strong> — temperature · rain · storms</td><td><span class="pill live">✅ live</span></td><td>Temperature is the case study above — Jev <strong>+11.8% avg return</strong> across 72 markets. Storm (tornado) markets now scored through the full snapshot pipeline (early sample, n=6, calibration being tightened); rain has no settled markets yet <span class="pill prelim">preliminary</span></td></tr>
       <tr class="rowjev"><td><strong>Crypto</strong> — daily BTC thresholds</td><td><span class="pill live">✅ live</span></td><td>Jev near-perfect here (Brier 0.02) — mostly easy, market prices still sparse <span class="pill prelim">preliminary</span></td></tr>
       <tr class="rowjev"><td><strong>Economics &amp; the Fed</strong> — rate · FOMC decision</td><td><span class="pill live">✅ live</span></td><td>Jev real signal on rate thresholds (Brier 0.21, 64% acc; +9% on 22 arena trades); FOMC-decision markets now scored through the full pipeline (early sample, n=6) <span class="pill prelim">preliminary</span></td></tr>
-      <tr><td>Financials &amp; companies</td><td><span class="pill soon">🔜 soon</span></td><td>earnings beats, guidance, price ranges, IPOs</td></tr>
-      <tr><td>Sports</td><td><span class="pill soon">🔜 soon</span></td><td>games, matches, tournaments</td></tr>
-      <tr><td>Science &amp; technology</td><td><span class="pill soon">🔜 soon</span></td><td>launches, releases, records</td></tr>
-      <tr><td>World &amp; climate</td><td><span class="pill soon">🔜 soon</span></td><td>global events, climate metrics</td></tr>
-      <tr><td>Entertainment</td><td><span class="pill soon">🔜 soon</span></td><td>awards, box office, culture</td></tr>
+      <tr class="rowjev"><td><strong>Financials</strong> — FX &amp; indices</td><td><span class="pill live">✅ live</span></td><td>FX pairs (NZD/USD, AUD/USD, USD/MXN) and equity-index thresholds now flowing through the pipeline; numbers being computed <span class="pill prelim">preliminary</span></td></tr>
+      <tr class="rowjev"><td><strong>Companies</strong> — metrics &amp; earnings</td><td><span class="pill live">✅ live</span></td><td>Spotify, Roku, Amazon &amp; more — company metric / earnings thresholds <span class="pill prelim">preliminary</span></td></tr>
+      <tr class="rowjev"><td><strong>Sports</strong> — games · spreads · totals</td><td><span class="pill live">✅ live</span></td><td>Game outcomes, spreads and totals across leagues <span class="pill prelim">preliminary</span></td></tr>
+      <tr class="rowjev"><td><strong>Science &amp; technology</strong> — AI &amp; tech</td><td><span class="pill live">✅ live</span></td><td>AI / tech events — model releases, token &amp; ecosystem metrics <span class="pill prelim">preliminary</span></td></tr>
+      <tr class="rowjev"><td><strong>Commodities</strong> — energy &amp; fuel</td><td><span class="pill live">✅ live</span></td><td>Gas prices and WTI crude thresholds <span class="pill prelim">preliminary</span></td></tr>
+      <tr><td>World · Entertainment · Health</td><td><span class="pill soon">🔜 soon</span></td><td>global events, awards, box office, public health</td></tr>
+      <tr><td>Elections &amp; geopolitics</td><td><span class="pill soon">🔒 gated</span></td><td>opt-in only — quarantined from the default set for sensitivity</td></tr>
     </tbody>
   </table></div>
   <p class="muted" style="margin-top:12px">Reward (real $$) is scored per category, so you can see exactly where a model beats the market — and where it doesn't.</p>
@@ -260,9 +277,9 @@
 
 <section id="data"><div class="wrap reveal">
   <span class="eyebrow">The dataset</span>
-  <h2>KalshiJev — a subset of the JevGym dataset and benchmark</h2>
-  <p><strong>KalshiJev</strong> is the Kalshi <strong>subset</strong> of the <strong>JevGym</strong> dataset (more sources to follow as their own subsets). Markets normalize into one schema with configs for <code>markets</code>, <code>price_history</code>, <code>evidence</code>, and <code>snapshots</code>. Splits are chronological and grouped by event, so no event straddles train and test.</p>
-  <div class="callout win"><strong>Build it yourself.</strong> KalshiJev is a spec, not a data drop — the tools reproduce it from data <strong>you</strong> fetch under each source's Terms of Service. The repo ships code only and republishes no operator data. <em>(Kalshi's Data Terms restrict training and redistribution without prior consent — comply with them; see the <a href="DISCLAIMER.md">disclaimer</a>.)</em></div>
+  <h2>KalshiJev — the Kalshi subset of the JevGym dataset</h2>
+  <p><strong>KalshiJev</strong> is the Kalshi <strong>subset</strong> of the <strong>JevGym</strong> dataset (more sources to follow as their own subsets). Markets normalize into one schema with configs for <code>markets</code>, <code>price_history</code>, <code>evidence</code>, and <code>snapshots</code>. Splits are chronological and grouped by event.</p>
+  <div class="callout"><strong>Build it yourself.</strong> KalshiJev is a <em>spec</em>, not a data drop — the tools reproduce it from data <strong>you</strong> fetch under each source's Terms of Service. The repo ships code only and republishes no operator data; Kalshi's Data Terms restrict training and redistribution of their data without prior written consent. See the <a href="DISCLAIMER.md">disclaimer</a>.</div>
 </div></section>
 
 <section id="quickstart"><div class="wrap reveal">

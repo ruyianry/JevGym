@@ -44,11 +44,21 @@ commercial rights (so commercial use, including by financial firms, can be licen
    hedge-fund, trading, investment, or other commercial collaboration) contact the copyright
    holder at: jevarena@proton.me. The copyright holder welcomes commercial collaboration.
 
-6. DATASET AND THIRD-PARTY MATERIALS
-   Any dataset published or referenced by this project, and any third-party code, models, or
-   data, are governed by their own terms, which may differ from and further restrict this
-   license. See the dataset card and NOTICE. Nothing here grants rights you do not have in
-   third-party or source data (for example, prediction-market or weather-provider terms).
+6. DATA AND THIRD-PARTY SOURCES (ACCEPTABLE USE)
+   The Software does not include or redistribute any market operator's data. It is a tool that
+   fetches data directly from third-party sources into your own local, private copy. Any dataset
+   published or referenced by this project, and any third-party code, models, or data, are
+   governed by their own terms, which may differ from and further restrict this license. Nothing
+   here grants rights you do not have in third-party or source data.
+
+   By using the Software you agree that:
+   (a) you will obtain any source data yourself, for your own personal, Non-Commercial use, and
+       are solely responsible for complying with each source's terms of use; and
+   (b) in particular, Kalshi's Data Terms of Use permit only personal, non-commercial access and,
+       absent Kalshi's prior written consent, prohibit using Kalshi Data to develop software or to
+       train machine-learning / AI systems, and prohibit providing archived or cached datasets
+       containing Kalshi Data to any other person or entity. You will not use the Software to do
+       any of those things without first obtaining Kalshi's written consent.
 
 7. TERMINATION
    This license terminates automatically if you breach it. On termination you must stop using

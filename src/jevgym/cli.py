@@ -68,6 +68,56 @@ def ingest_kalshi(
     _echo(_ingest(settings, config))
 
 
+@ingest_app.command("categories")
+def ingest_categories_cmd(
+    categories: str = typer.Option("", "--categories", help="Comma-separated categories (default: all registered)."),
+    max_markets: int = typer.Option(200, "--max-markets", help="Max markets per series."),
+    data_dir: str = DataDir,
+):
+    """Expand the dataset: ingest every registered series in the given categories (economics
+    indicators, crypto, storms), stamping the category so evidence attaches to the right domain."""
+    settings = _settings(data_dir)
+    settings.paths.ensure()
+    from .data.categories import CATEGORY_SERIES
+    from .data.kalshi.ingest import ingest_categories as _ic
+
+    cats = [c.strip() for c in categories.split(",") if c.strip()] or list(CATEGORY_SERIES)
+    _echo(_ic(settings, cats, max_markets=max_markets))
+
+
+@ingest_app.command("scaled")
+def ingest_scaled_cmd(
+    categories: str = typer.Option("", "--categories", help="Comma-separated categories (default: all non-gated)."),
+    target_events: int = typer.Option(100, "--target-events", help="Distinct settlement events to aim for per category."),
+    per_event: int = typer.Option(2, "--per-event", help="Max markets (strikes) kept per event."),
+    pool: int = typer.Option(600, "--pool", help="Settled markets to pool per series before selecting."),
+    data_dir: str = DataDir,
+):
+    """Scale each bench: pool many settled markets and keep the *significant* ones — real price
+    trajectory, near-the-money (drops 1c tails) — spread across ~target-events distinct events."""
+    settings = _settings(data_dir)
+    settings.paths.ensure()
+    from .data.categories import CATEGORY_SERIES
+    from .data.kalshi.ingest import ingest_scaled as _is
+
+    cats = [c.strip() for c in categories.split(",") if c.strip()] or list(CATEGORY_SERIES)
+    _echo(_is(settings, cats, target_events=target_events, per_event_cap=per_event, pool_per_series=pool))
+
+
+@ingest_app.command("fred")
+def ingest_fred_cmd(
+    series: str = typer.Option("", "--series", help="Comma-separated FRED series ids (default: the macro set)."),
+    data_dir: str = DataDir,
+):
+    """Fetch FRED macro observations (trend evidence for economics markets). Needs FRED_API_KEY."""
+    settings = _settings(data_dir)
+    settings.paths.ensure()
+    from .evidence.macro import fetch_fred
+
+    ids = [s.strip() for s in series.split(",") if s.strip()] or None
+    _echo(fetch_fred(settings, ids))
+
+
 @ingest_app.command("polymarket")
 def ingest_polymarket(
     max_markets: int = typer.Option(500, "--max-markets"),

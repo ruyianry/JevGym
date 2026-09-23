@@ -250,9 +250,12 @@ jevgym hf-push --repo "$HF_REPO_ID"      # publish KalshiJev (private by default
 jevgym eval --agents kalshi_market,jev            # benchmark Jev (reward is the headline)
 ```
 
-Kalshi and Polymarket normalize into the **same** schema (each row tagged `source`), so the
-published dataset spans both and a model can be scored across either. Each snapshot is a
-(state → verified outcome) example, so every forecast is graded against what actually happened.
+Kalshi and Polymarket normalize into the **same** schema (each row tagged `source`), so a model
+can be scored across either. Each snapshot is a (state → verified outcome) example, with
+chronological, event-grouped splits. You build the dataset **locally** from data you fetch
+yourself under each source's Terms of Service — the repo ships code only and republishes no
+operator data (Kalshi's Data Terms restrict training and redistribution without prior written
+consent; see the disclaimer).
 
 Everything runs **offline on fixtures** with no credentials, network, or GPU:
 

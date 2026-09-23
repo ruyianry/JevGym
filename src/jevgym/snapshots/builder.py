@@ -14,6 +14,7 @@ from collections import defaultdict
 from ..config import Settings
 from ..data.parse import load_markets, load_prices
 from ..evidence import evidence_domain, load_evidence
+from ..evidence.history import SeriesHistory
 from ..io import read_model_jsonl, write_model_jsonl
 from ..models import (
     EvidenceItem,
@@ -38,13 +39,22 @@ DOMAIN_MAP = {
     "cryptocurrencies": "crypto",
     "sports": "sports",
     "politics": "politics",
+    "elections": "politics",  # gated / sensitive
     "financials": "financials",
+    "companies": "companies",
+    "science and technology": "science",
+    "commodities": "commodities",
 }
 
 
 def domain_of(market: Market) -> str:
     cat = (market.category or "").strip().lower()
-    return DOMAIN_MAP.get(cat, cat or "other")
+    if cat:
+        return DOMAIN_MAP.get(cat, cat)
+    # No category on the market payload — fall back to the curated series→domain registry.
+    from ..data.categories import DOMAIN_BY_SERIES
+
+    return DOMAIN_BY_SERIES.get(market.series_ticker or "", "other")
 
 
 def _price_at_or_before(sorted_prices: list[PricePoint], ts) -> PricePoint | None:
@@ -192,6 +202,9 @@ def build_snapshots(settings: Settings) -> dict:
             if dom:
                 general_by_domain[dom].append(e)
 
+    # Prior-decisions enrichment: the series' own recent settled outcomes, leakage-safe.
+    history = SeriesHistory(markets)
+
     snapshots: list[Snapshot] = []
     for m in markets:
         if m.outcome_binary is None or not (m.open_time and m.close_time):
@@ -201,6 +214,9 @@ def build_snapshots(settings: Settings) -> dict:
         for cp in checkpoints(m.open_time, m.close_time):
             price = _price_at_or_before(plist, cp.timestamp)
             ev = _visible_evidence(m, domain, cp.timestamp, general_by_domain, by_market)
+            hist = history.evidence_for(m, cp.timestamp, domain)
+            if hist is not None:
+                ev = sorted([*ev, hist], key=lambda e: e.available_at)
             snapshots.append(_snapshot(m, cp, domain, price, ev))
 
     split_counts = assign_splits(snapshots)
