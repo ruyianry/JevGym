@@ -20,11 +20,12 @@ JEV_WIRE_OPEN = {
     "von": ("VON_BASE", "http://127.0.0.1:8000", "von"),
     "decider": ("DECIDER_BASE", "http://127.0.0.1:8001", "decider-2b"),
     "openjev": ("OPENJEV_BASE", "http://127.0.0.1:8002", "openjev-diffusiongemma"),
+    "watersheep": ("WATERSHEEP_BASE", "http://127.0.0.1:8766", "samratduttaofficial/WaterSheep"),
 }
 
 BASELINE_PROVIDERS = ["kalshi_market"]
 LLM_PROVIDERS = ["llm", "llm_agent", "gpt", "gpt_agent", "qwen", "qwen_agent", "gemini", "gemini_agent"]
-REAL_PROVIDERS = ["mock", "kalshi_market", "jev", "nanojev", "von", "decider", "openjev", *LLM_PROVIDERS]
+REAL_PROVIDERS = ["mock", "kalshi_market", "jev", "nanojev", "von", "decider", "openjev", "watersheep", *LLM_PROVIDERS]
 ROADMAP_PROVIDERS = list(ROADMAP_FACTORIES)
 ALL_PROVIDERS = REAL_PROVIDERS + ROADMAP_PROVIDERS
 

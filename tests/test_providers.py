@@ -65,6 +65,26 @@ def test_jev_wire_provider_roundtrip():
     assert dr.latency_ms is not None
 
 
+@respx.mock
+def test_watersheep_is_a_jev_wire_server(monkeypatch):
+    monkeypatch.delenv("WATERSHEEP_BASE", raising=False)
+    route = respx.post("http://127.0.0.1:8766/v1/systemone").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "model": "watersheep-20260928",
+                "answers": {"q": {"type": "choice", "choice": "NO", "probabilities": {"YES": 0.2, "NO": 0.8}}},
+                "usage": {"input_tokens": 35, "output_tokens": 0},
+            },
+        )
+    )
+    dr = build_provider("watersheep").decide("state", "Which outcome?", ["YES", "NO"])
+    assert route.called
+    assert dr.selected == "NO" and dr.probabilities["NO"] == 0.8
+
+    monkeypatch.setenv("WATERSHEEP_BASE", "http://10.0.0.5:9000/")
+    assert build_provider("watersheep").base_url == "http://10.0.0.5:9000"
+
 def test_roadmap_stub_raises_clearly():
     stub = build_provider("semif")  # still a roadmap stub (nanojev is now a real adapter)
     with pytest.raises(NotImplementedError) as e:
